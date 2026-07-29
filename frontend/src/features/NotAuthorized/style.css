@@ -1,0 +1,46 @@
+.custom-bg {
+    background-color: white;
+}
+
+.errors-page-wrapper{
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+    padding-top:10%;
+    padding-bottom:10%;
+}
+
+.errors-page{
+    text-align: center;
+}
+
+.errors-page a{
+    font-weight: bold;
+}
+
+.errors-page h1{
+    font-weight:bold;
+}
+
+.errors-page p{
+    font-weight: normal;
+}
+
+.errors-page button {
+    background: white;
+    transition: background-color 0.4s ease;
+    padding:10px;
+    border-radius: 30px;
+    border: 1px solid lightgray;
+}
+
+.errors-page button:hover{
+    background-color: #fdc049;
+}
+
+.custom-btn:hover {
+    background-color: #f3e8ff !important;
+    transition: background-color 0.3s ease-in-out;
+}
+

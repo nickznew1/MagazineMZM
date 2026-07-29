@@ -1,0 +1,173 @@
+/*.header {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    grid-area: header;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    background-color: blue;
+    color: white;
+}*/
+
+.header__controls{
+    display:grid;
+    grid-template-columns:auto auto auto auto auto;
+    padding :0px 20px 0px 20px;
+    max-height:92px;
+
+    @media (max-width: 1200px) and (orientation : landscape) {
+        grid-template-columns:1fr 1fr;
+    }
+
+    @media(max-width: 800px){
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.header__image{
+    padding:10px;
+
+}
+
+.header__image img{
+    max-height:70px;
+}
+
+.header__image button{
+    background-color:#fdc049;
+}
+
+.header__cabinet-button{
+    width: 100%;
+    @media (max-width: 1200px) and (orientation : landscape) {
+        display: none;
+    }
+
+    @media(max-width: 800px){
+        display:none;
+    }
+}
+
+.header__cabinet-button button{
+    background-color: transparent;
+    width: 90%;
+    font-weight: 600;
+    font-size:22px;
+    height: 100%;
+    transition: background-color 0.4s ease;
+    border:none;
+}
+
+.header__cabinet-button button:hover{
+    background-color: #fdc049;
+}
+
+.header__links{
+    grid-column: 3;
+    display:grid;
+    gap:100px;
+    grid-template-columns:1fr 1fr;
+    justify-content: center;
+    padding:20px;
+    color:black;
+    align-self:center;
+    justify-self: center;
+    @media (max-width: 1200px) and (orientation : landscape) {
+        display: none;
+    }
+
+    @media(max-width: 800px){
+        display:none;
+    }
+}
+
+.links__email{
+    display:grid;
+    grid-template-rows:1fr 1fr;
+}
+
+.header-links-email{
+    font-size:22px;
+    color:#fdc049;
+    font-weight: 1000;
+}
+
+.header-links-email-misc{
+    color:gray;
+}
+
+.links__phone{
+    display:grid;
+    grid-template-rows:1fr 1fr;
+}
+.header-links-phone{
+    font-size:22px;
+    color:#fdc049;
+    font-weight: 1000;
+}
+.header-links-phone-misc{
+    color:gray;
+}
+
+.header__cart{
+    justify-self: flex-end;
+    width:100%;
+
+
+    @media (max-width: 1200px) and (orientation : landscape) {
+        display: none;
+    }
+    @media(max-width: 800px){
+        display:none;
+    }
+}
+
+.header__cart button{
+    background-color: transparent;
+    border:none;
+    width: 90%;
+    height: 100%;
+    font-weight: 600;
+    font-size:22px;
+    align-self:center;
+    justify-self: center;
+    padding:20px;
+    transition: background-color 0.4s ease;
+}
+
+.header__cart button:hover{
+    background-color: #fdc049;
+}
+
+.header__address{
+    display:flex;
+    flex-direction: column;
+    padding:25px;
+    transition: color 0.4s ease;
+}
+
+.header__address:hover{
+    color: #fdc049;
+}
+
+.header__address a{
+    text-decoration: none;
+
+}
+
+
+
+.header__address p {
+    margin:0;
+    color:gray;
+    font-size:18px;
+    transition: color 0.4s ease;
+}
+.header__address p:hover{
+    color: #fdc049;
+}
+
+.header__address svg{
+    margin-right: 5px;
+}

@@ -1,0 +1,332 @@
+.admin_page-wrapper{
+    padding: 0 16px;
+}
+.admin_page{
+    max-width: 90%;
+    margin: 20px auto;
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 32px;
+}
+
+.admin_page-header{
+    grid-column-start: 1;
+    grid-row-start: 1;
+}
+
+.admin_page-filter-wrapper{
+    grid-row-start: 2;
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:50px;
+    align-items:start;
+}
+
+.admin_page-filter-controls{
+    display:grid;
+    grid-template-rows:auto auto;
+    width:300px;
+}
+
+.admin_page-filter-wrapper button {
+    padding:15px;
+    background-color:white;
+    border:1px solid gray;
+    transition:background-color 0.5s ease;
+    font-weight: 600;
+    text-align: start;
+    font-size: 13px;
+    width:200px;
+}
+
+
+.admin_page-users-table {
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    overflow-x:auto;
+    width:100%;
+    table-layout: fixed;
+}
+
+.admin_page-table-body{
+    overflow-x: scroll;
+    max-height: 1000px;
+}
+
+.admin_page-users-table button{
+    max-width: 90%;
+}
+
+.admin_page-users-table tbody{
+    overflow-x:auto;
+}
+
+.admin_page-users-table thead {
+    background-color: #fdc049;
+}
+
+
+.admin_page-users-table th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 700;
+    color: #222;
+    border-bottom: 2px solid #e3a521;
+
+}
+
+.admin_page-users-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #e5e5e5;
+    font-size: 14px;
+    text-align: left;
+}
+
+.admin_page-users-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.admin_page-users-table tbody tr:hover {
+    background-color: #fff7e3;
+}
+
+.admin_page-users-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.admin_page-users-wrapper {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.admin_page-users-table thead th {
+    position: sticky;
+    top: 0;
+}
+
+.admin_page-filter-wrapper button:hover{
+    background-color:#fdc049;
+}
+
+.admin_page-filter-wrapper button.active{
+    background-color:#fdc049;
+}
+
+.admin_page-filter-wrapper svg.active{
+    rotate:180deg;
+}
+
+.admin-page-item-status__buttons{
+    display:flex;
+    flex-direction: column;
+}
+
+
+.admin-page-modal-overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(2px);
+    z-index:999;
+
+}
+
+.admin-page-modal-content{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    width: 1300px;
+    height: 700px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    overflow: auto;
+}
+
+.admin-page-modal-content #close{
+    padding:5px;
+    transition: background-color 0.5s ease;
+    background-color: white;
+    border: 1px solid #fdc049;
+    font-weight: 600;
+    margin-top:10px;
+    width:100%;
+}
+
+.admin-page-modal-content #close:hover{
+    background-color: #fdc049;
+}
+
+.admin-page-application-items-wrapper{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+
+}
+
+
+.admin-page-application-item {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid lightgrey;
+    padding: 20px;
+    box-sizing: border-box;
+    transition:
+            transform 0.25s ease,
+            box-shadow 0.25s ease;
+    box-shadow:
+            0 1px 2px rgba(0,0,0,0.08),
+            0 2px 8px rgba(0,0,0,0.06);
+    height: 100%;
+}
+
+.admin-page-application-item #name{
+    font-size:20px;
+    font-weight: 600;
+    margin-bottom:10px;
+}
+
+.admin-page-application-item #item-type{
+    font-weight: 600;
+    margin-bottom:10px;
+}
+
+.admin-page-application-item #item-secondary_type{
+    color:gray;
+    margin-bottom:10px;
+}
+
+.admin-page-application-item img {
+    align-self: center;
+    height: 250px;
+    width: 200px;
+}
+
+.admin-page-application-item button{
+    display:grid;
+    grid-template-columns: auto auto;
+    gap:250px;
+    padding:5px;
+    transition: background-color 0.5s ease;
+    background-color: white;
+    border: 1px solid #fdc049;
+    border-radius: 20px;
+    font-weight: 600;
+    margin-top:10px;
+    max-width:641px;
+}
+
+.admin-page-application-item button svg{
+    color:black;
+    transition: transform 0.2s;
+}
+
+.admin-page-application-item button.active{
+    background-color: #fdc049;
+}
+
+
+.admin-page-application-item button.active svg{
+    transform: rotate(180deg);
+}
+
+.admin-page-application-item button:hover{
+    background-color: #fdc049;
+}
+
+.admin-page-application-item__specs-wrapper{
+    border:1px dotted #fdc049;
+    margin-top:20px;
+    max-width:641px;
+}
+
+.admin-page-application-item__specs{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding:15px;
+    gap:2px;
+}
+
+.admin-page-application-item__specs #key{
+    font-weight: 600;
+}
+
+.admin-page-application-item-info-wrapper{
+    margin-top:20px;
+    padding:20px;
+    border:1px solid lightgrey;
+}
+.admin-page-application-item-info .header{
+    width: 200px;
+    font-weight: bold;
+    margin: 0;
+}
+
+
+
+.admin-page-application-item-info{
+    display:grid;
+    grid-template-columns: auto 1fr;
+    margin-bottom:10px;
+}
+
+.admin_page-item-create-table{
+    display:table-caption;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    overflow-x:auto;
+    width:100%;
+    table-layout: fixed;
+}
+
+.admin_page-item-create-table th{
+    display: table-cell;
+    padding: 10px;
+    background-color: #fdc049;
+    border-bottom: 2px solid #e3a521;
+}
+
+.admin_page-item-create-table td{
+    padding:20px 20px 20px 20px
+}
+
+.admin_page-item-create-table tr {
+    border-bottom: 1px solid lightgrey;
+    width:800px;
+}
+
+.admin_page-item-create-table td {
+    display: flex;
+    flex-direction: column;
+}
+
+.admin_page-item-create-table input {
+    padding: 11px 10px;
+    font-size: 1rem;
+    border: 2px black solid;
+    border-radius: 5px;
+    background: white;
+    width:400px;
+}
+
+.admin_page-item-create-table textarea{
+    max-width: 800px;
+}
+
+.admin-page-errors{
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color :red;
+    font-size:15px;
+    margin-top:5px;
+}

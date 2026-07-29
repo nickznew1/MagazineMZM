@@ -1,0 +1,110 @@
+.constructor-page{
+    padding-left:32px;
+    padding-right:32px;
+    padding-top:20px;
+    padding-bottom:20px;
+    margin-right:auto;
+    margin-left:auto;
+    max-width: 1425px;
+}
+
+#constructor-submit{
+    display: grid;
+    padding-left:32px;
+    padding-right:32px;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(1, 1fr);
+    gap:10px;
+}
+
+.constructor-item {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 2px dotted black;
+    align-items: center;
+    padding: 10px;
+    font-weight: 600;
+}
+
+.constructor-item input {
+    width :200px;
+}
+.constructor-item-card button{
+    width:100%;
+    background-color:white;
+    border: 1px solid #fdc049;
+    font-weight: 600;
+    border-radius:10px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    transition: background-color 0.5s ease;
+    padding:10px;
+}
+.constructor-item input {
+   margin-left:90px;
+    text-align:center;
+    font-weight:600;
+    width:50px;
+    border :1px solid #fdc049;
+    padding:15px;
+}
+
+.constructor-item-error input{
+    margin-left:90px;
+    text-align:center;
+    font-weight:600;
+    width:50px;
+    border :1px solid #fdc049;
+    padding:15px;
+}
+.constructor-item-card button:hover{
+     background-color:#fdc049;
+ }
+.constructor-item-card button.active{
+    background-color:#fdc049;
+}
+
+.constructor-item-error{
+    display: grid;
+    align-items: center;
+    padding: 10px;
+    font-weight: 600;
+    grid-template-columns: 1fr 1fr;
+    border: 2px dotted red;
+}
+
+
+.constructor-submit__button{
+    padding-left:32px;
+    padding-right:32px;
+    margin-top:10px;
+
+}
+
+.constructor-submit__button p{
+    text-align: center;
+    font-weight: 600;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color:red;
+    font-size:20px;
+
+}
+
+.constructor-submit__button button {
+    width:100%;
+    background-color:white;
+    border: 1px solid #fdc049;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    transition: background-color 0.5s ease;
+    padding:20px;
+}
+
+.constructor-submit__button button:hover{
+    background-color:#fdc049;
+}
+.constructor-submit__button button.active{
+    background-color:#fdc049;
+}
+
+

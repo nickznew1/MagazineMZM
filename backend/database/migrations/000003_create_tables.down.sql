@@ -1,0 +1,10 @@
+DROP TABLE customer CASCADE;
+DROP TABLE customer_item CASCADE;
+DROP TABLE item CASCADE;
+DROP TABLE spec CASCADE;
+DROP TABLE customer_personal_info CASCADE;
+DROP TABLE customer_delivery_info CASCADE;
+DROP TABLE item_properties CASCADE;
+DROP TABLE item_spec_files CASCADE;
+DROP TABLE item_properties_values CASCADE;
+DROP TABLE user_applications;

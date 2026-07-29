@@ -1,0 +1,83 @@
+package service
+
+import (
+	"encoding/json"
+	"fmt"
+	"myWebApp/backend/internal/domain/model"
+	"myWebApp/backend/internal/domain/usecase"
+	"net/http"
+)
+
+type CartService struct {
+	useCase usecase.CartUseCase
+}
+
+func NewCartService(c *usecase.CartUseCase) *CartService {
+	return &CartService{
+		useCase: *c}
+}
+
+func (h *CartService) GetCart(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Get shopping cart")
+	userIdJWT := r.Context().Value("user_id")
+	fmt.Println("userIdJWT for cart ", userIdJWT)
+	idStr, ok := userIdJWT.(string)
+	if !ok {
+		respondWithError(w, http.StatusForbidden, "invalid user id format")
+		return
+	}
+	userId, err := h.useCase.GetCart(idStr)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "id doesnt find")
+		return
+	}
+	respondWithJSON(w, http.StatusOK, userId)
+}
+
+func (h *CartService) CreateUserItem(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("CreateUser item")
+	var input model.Cart
+	fmt.Println(input)
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Неверные данные")
+		return
+	}
+	shopCart, err := h.useCase.AddItemToCart(input)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "oshibka")
+		return
+	}
+	respondWithJSON(w, http.StatusCreated, shopCart)
+}
+
+func (h *CartService) DeleteUserItem(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("DeleteUserItem")
+	var input model.Cart
+
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Неверные данные")
+		return
+	}
+	deleteItem, err := h.useCase.DeleteUserItem(input)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "error when deleting item from cart")
+		return
+	}
+	respondWithJSON(w, http.StatusNoContent, deleteItem)
+}
+
+func (h *CartService) CalcUserItem(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("calc item")
+	var input model.Cart
+
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		respondWithError(w, http.StatusBadRequest, "wrong body for counter")
+		return
+	}
+	calcItem, err := h.useCase.CalcUserItem(input)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, "error on server when try to count")
+		return
+	}
+	respondWithJSON(w, http.StatusCreated, calcItem)
+}

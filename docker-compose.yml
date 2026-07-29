@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backups:/backups
+      - ./data/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    networks:
+      - app_network
+
+
+
+volumes:
+  postgres_data:
+    name: postgres_data_12
+
+networks:
+  app_network:
+    driver: bridge
