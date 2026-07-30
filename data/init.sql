@@ -1,0 +1,767 @@
+--
+-- PostgreSQL database dump
+--
+
+\restrict ceRFaZYtq1SxoqqVgXe82mfV2erhlmr1WKaRXgD7shq9ryfQpsxjsWxUseca1oW
+
+-- Dumped from database version 14.23
+-- Dumped by pg_dump version 14.23
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: customer; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.customer (
+    id integer NOT NULL,
+    login character varying(50) NOT NULL,
+    password character varying(255) NOT NULL,
+    email character varying(50) NOT NULL,
+    user_role character varying(50) DEFAULT 'ordinary'::character varying NOT NULL,
+    registration_date timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+);
+
+
+--
+-- Name: customer_delivery_info; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.customer_delivery_info (
+    id integer,
+    phone_number text,
+    city text,
+    address text
+);
+
+
+--
+-- Name: customer_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.customer_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: customer_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.customer_id_seq OWNED BY public.customer.id;
+
+
+--
+-- Name: customer_item; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.customer_item (
+    item_id integer,
+    count integer,
+    customer_id integer,
+    props jsonb
+);
+
+
+--
+-- Name: customer_personal_info; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.customer_personal_info (
+    id integer,
+    company text,
+    first_name text,
+    second_name text
+);
+
+
+--
+-- Name: item; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.item (
+    id integer NOT NULL,
+    name text NOT NULL,
+    price integer,
+    item_type text NOT NULL,
+    secondary_type text NOT NULL,
+    item_picture text,
+    item_description text NOT NULL,
+    item_short_description text NOT NULL,
+    article integer,
+    visible boolean DEFAULT false NOT NULL
+);
+
+
+--
+-- Name: item_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.item_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: item_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.item_id_seq OWNED BY public.item.id;
+
+
+--
+-- Name: item_properties; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.item_properties (
+    id integer NOT NULL,
+    name text NOT NULL
+);
+
+
+--
+-- Name: item_properties_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.item_properties_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: item_properties_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.item_properties_id_seq OWNED BY public.item_properties.id;
+
+
+--
+-- Name: item_properties_values; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.item_properties_values (
+    item_id integer NOT NULL,
+    property_id integer NOT NULL,
+    value character varying(500) NOT NULL
+);
+
+
+--
+-- Name: item_spec_files; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.item_spec_files (
+    id integer NOT NULL,
+    name text NOT NULL,
+    link text NOT NULL,
+    picture text NOT NULL
+);
+
+
+--
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.schema_migrations (
+    version bigint NOT NULL,
+    dirty boolean NOT NULL
+);
+
+
+--
+-- Name: spec; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.spec (
+    id integer NOT NULL,
+    item_id integer,
+    item_patch text NOT NULL,
+    name text NOT NULL
+);
+
+
+--
+-- Name: spec_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.spec_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: spec_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.spec_id_seq OWNED BY public.spec.id;
+
+
+--
+-- Name: user_applications; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.user_applications (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    email character varying(50) NOT NULL,
+    first_name character varying(30) NOT NULL,
+    second_name character varying(30) NOT NULL,
+    login character varying(30) NOT NULL,
+    phone_number character varying(30) NOT NULL,
+    company character varying(50) NOT NULL,
+    address character varying(80) NOT NULL,
+    city character varying(30) NOT NULL,
+    order_date date,
+    items jsonb,
+    order_status character varying(20) DEFAULT 'В обработке'::character varying NOT NULL
+);
+
+
+--
+-- Name: user_applications_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.user_applications_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: user_applications_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.user_applications_id_seq OWNED BY public.user_applications.id;
+
+
+--
+-- Name: customer id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.customer ALTER COLUMN id SET DEFAULT nextval('public.customer_id_seq'::regclass);
+
+
+--
+-- Name: item id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.item ALTER COLUMN id SET DEFAULT nextval('public.item_id_seq'::regclass);
+
+
+--
+-- Name: item_properties id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.item_properties ALTER COLUMN id SET DEFAULT nextval('public.item_properties_id_seq'::regclass);
+
+
+--
+-- Name: spec id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.spec ALTER COLUMN id SET DEFAULT nextval('public.spec_id_seq'::regclass);
+
+
+--
+-- Name: user_applications id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_applications ALTER COLUMN id SET DEFAULT nextval('public.user_applications_id_seq'::regclass);
+
+
+--
+-- Data for Name: customer; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.customer (id, login, password, email, user_role, registration_date) FROM stdin;
+2	AdminUser	$2a$12$Ve.w2S.3WxHYObTfeFiP8uQjku5rkeoJvLOSeh8btunIFlL2nwot6	testUser@gmail.com	admin	2026-07-01 07:37:26.070058
+3	PrimaryUser	$2a$12$h4EUVhThodORLKEqoX7Ske6GTLBqVEDiCNXbcU2OI2wdbeqX.umX.	PrimaryUser@gmail.com	ordinary	2026-07-01 07:38:23.789422
+\.
+
+
+--
+-- Data for Name: customer_delivery_info; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.customer_delivery_info (id, phone_number, city, address) FROM stdin;
+\.
+
+
+--
+-- Data for Name: customer_item; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.customer_item (item_id, count, customer_id, props) FROM stdin;
+5	4	3	{"Взрывозащита": "1 Exd IIC T5 Gb X", "Погрешность, %": "0...+100", "Пылевлагозащита": "IP 66/68", "Спец. исполнение": "Сероводородное", "Выходные сигналы": " Цифровой: RS-485 с протоколом Modbus RTU", "Измеряемая среда": "Жидкость", "Напряжение питания, В": " ±1.5", "Межповерочный интервал": "4 года", "Диаметр условного прохода, мм": " 100", "Температура измеряемой среды, °С": "-60...+70", "Температура окружающей среды, °С": "-60...+70"}
+\.
+
+
+--
+-- Data for Name: customer_personal_info; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.customer_personal_info (id, company, first_name, second_name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: item; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.item (id, name, price, item_type, secondary_type, item_picture, item_description, item_short_description, article, visible) FROM stdin;
+1	МЗМ-ДД1 Дифференциального давления	30000	Датчик давления	Дифференциальное давление	Датчик дифференциального давления.png	Данные приборы измеряют давление в трубах, сосудах, аппаратах, паровых и водогрейных котлах, в качестве точки отсчета при этом используется давления равного абсолютному нулю. Обеспечивается такое измерение наличием специальной камеры, из которой при изготовлении прибора откачивается воздух. Эта камера располагается в полости сенсора, а с другой стороны на чувствительный элемент воздействует давление измеряемой среды. Электронный блок производит расчет и выводит полученное значение на дисплей или передает с помощью выходных сигналов.\r\n\r\nЧувствительным элементом служит монокристаллическая кремниевая мембрана, на которой расположен мост Уитстона, плечи моста - пьезорезисторы. Для защиты сенсора от воздействия агрессивной измеряемой и окружающих сред, в отдельных модификациях предусмотрены разделительные мембраны и заполняющая жидкость. При этом есть возможность выбрать тип заполняющей жидкости и материалы мембраны. В руководстве по эксплуатации прописаны все варианты изготовления, в том числе электронного блока и корпуса приборов с учетом условий эксплуатации.	Исполнения: штуцерное, с открытой разделительной мембранной или выносной разделительной мембраной, с традиционным фланцевым присоединением по стандартам EN 61518: IEC 61518. Диапазон настраиваемого верхнего предела измерения (ВПИ) 500 Па до 40 МПа. Перенастройка диапазона измерения 100:1, температура среды до 230 ºC, самодиагностика NAMUR NE107, соответствие требованиям функциональной безопасности SIL2.	9823	t
+3	МЗМ-ИД-1 избыточного давления	35000	Датчик давления	Избыточное давление	Датчик избыточного давления.png	Датчики давления 4-20 мА могут использоваться в системах автоматического контроля, регулирования и управления технологическими процессами в черной и цветной металлургии, нефтепереработке и газопереработке, добыча нефти газа, химической отрасли и пищевой отрасли. Также датчики давления ЭМИС-БАР успешно применяются на рудниках и морских платформах и судах.\r\n\r\nПредставляют собой сочетание преобразователей избыточного и вакуумметрического давлений, т.е. измеряют как давление, так и разрежение.\r\n\r\nДатчики МЗМ для измерения избыточного давления применяются в системах коммерческого учета для компенсации давления измеряемой среды при приведении значения расхода к стандартным или нормальным условиям.\r\n\r\nВ энергетике данный тип приборов используется для измерения давления пара, воды, газа и других рабочих сред в котлах, турбинах, теплосчетчиках и другом оборудовании;\r\n\r\nВ химической промышленности преобразователи избыточного давления используются для контроля давления в реакторах, колоннах, емкостях и других аппаратах, а также для измерения скорости потока и расхода химических реагентов;\r\n\r\nВ вакуумной технике используются для контроля давления в вакуумных насосах, камерах, установках и других системах.	Исполнения: штуцерное, с открытой разделительной мембранной или выносной разделительной мембраной, с традиционным фланцевым присоединением по стандартам EN 61518: IEC 61518. Диапазон настраиваемого верхнего предела измерения (ВПИ) от 100 Па до 70 МПа. Перенастройка диапазона измерения 100:1, температура среды до 700 ºC, самодиагностика NAMUR NE107, соответствие требованиям функциональной безопасности SIL2.	9823	t
+4	МЗМ-ГД-1 гидростатического давления	60000	Датчик давления	Гидростатическое давление	Датчик гидростатического давления.png	Датчики гидростатического давления также получили наименование уровнемеры, поскольку они способны производить учет объема жидкости в емкости. Измерение проводится при помощи столба жидкости на плюсовую мембрану и, при необходимости, измерения минусовой полостью под куполом емкости, для исключения влияния насыщенного пара.\r\n\r\nУстройства имеют дополнительный сертификат на эксплуатацию в среде сероводорода (ГОСТ Р 53679 и 53676), уровень полноты безопасности SIL-2 (ГОСТ Р МЭК 61508) SIL, заключение по санитарно-гигиенической экспертизе, что позволяет использовать их в пищевой промышленности.\r\n\r\nИмеется дополнительная опция – исполнение с радиатором между корпусом датчика и разделительной мембраной для работы при температуре до 200°С. При спецзаказе делается внешняя защитная обработка, если окружающая среда обладает высокой коррозионной активностью. Перечень всех дополнительных опций и специсполнений прописан в руководстве по эксплуатации.	Варианты присоединения датчика гидростатического давления к процессу: с мембранным фланцевым разделителем стандартной и тубусной конструкции. До 3 МПа.	9823	t
+5	МЗМ-ВА-1 вихреакустического расхода	90000	Датчик расхода	Вихреакустический расход	вихреакустический.png	Принцип его работы заключается в следующем: электронный блок формирует на датчике-излучателе высокочастотный ультразвуковой сигнал, который проходя через вихревую дорожку, модулируется по фазе и поступает на датчик пьезоприемника. Такой метод обеспечивает виброустойчивость и расширяет динамический диапазон (до значения 1:100).\r\n\r\nТакже для расходомера внедрена автоматическая подстройка уровня сигналов, позволяющая компенсировать загрязнения сенсоров и их деградацию по мере старения прибора.\r\n\r\nВ базовой версии электронный блок поставляется с частотно/импульсным выходом и цифровым выходным сигналом Modbus с интерфейсом RS-485. Однако, по желанию заказчика, приборы могут быть изготовлены с четырехстрочным OLED-индикатором, аналоговым выходным сигналом и цифровым протоколом HART.\r\n\r\nВзрывозащищенное исполнение и широкий температурный диапазон (от -60 до +70 ºC) позволяют эксплуатировать расходомер в экстремальных условиях.\r\n\r\nОн предназначен для измерения объема и объемного расхода жидкостей в трубопроводах систем ППД (поддержания пластового давления), а также других жидкостей при высоком давлении.	Преобразователи расхода могут использоваться в составе автоматических систем управления и контроля, локальных схемах автоматизации с использованием частотно-импульсного сигнала, токового сигнала и цифрового сигнала ModBus (RS485) и HART.	123456	t
+7	МЗМ-ВР-2 вихревого расхода	89000	Датчик расхода	Вихревой расход	Датчик вихревой расход.png	Счетчик не требует периодической калибровки, а диагностика и замена узлов производится без демонтажа. Доставляют счетчики только после прохождения обязательного пролива на поверочном стенде. Удаленная передача данных, настройка, поверка приборов (через RS-485 на базе протокола Modbus RTU) позволяют снижать расходы на обслуживание. Счетчик имеет широкий динамический диапазон измерений; важным преимуществом является наличие конструктивного исполнения с коническими переходами.\r\n\r\nВысокая точность измерений позволяет использовать вихревой счетчик газа и пара для коммерческого учета в составе теплосчетчиков и счетчиков пара	При покупке любого прибора мы предоставляем вам поддержку при проектировании, разработке комплексов и измерительных систем, индивидуальном подборе. В зависимости от проекта инженеры компании предоставят стандартное либо уникальное индивидуальное исполнение расходомера. Приборы выпускаются в нескольких модификациях, а значит это универсальные счетчики, которые можно использовать в различных сферах промышленности и хозяйства.	123456	t
+10	МЗМ-ВУ-1 волноводный	123221	Датчик уровня	Волноводные	Волновой уровнемер.png	Уровнемеры волноводные МЗМ-ВУ-1 предназначены для измерений уровня жидкости, в том числе сжиженных газов, и сыпучих материалов при атмосферном и избыточном давлении.\r\n\r\nПринцип действия волноводных уровнемеров основан на излучении электромагнитных импульсов, распространяющихся вдоль зонда в сторону измеряемой среды. При достижении среды с другой диэлектрической проницаемостью часть импульсов отражается и передаётся обратно.\r\n\r\nНа основании временной задержки между излученным и принятым сигналом рассчитывается значение уровня измеряемой среды. Аналогичным образом измеряется расстояние между сенсором и границей раздела двух жидких сред с различными коэффициентами диэлектрической проницаемости.	Волноводные уровнемеры МЗМ-ВУ-1 предназначены для измерения и контроля уровня и границы раздела фаз жидких и сыпучих сред.	9999	t
+9	МЗМ-РУ-1 радарный	55555	Датчик уровня	Радарные	УРОВНЕМЕР РАДАРНЫЙ.png	Принцип действия уровнемеров основан на излучении антенной уровнемера непрерывного частотно-модулированного сигнала, который, отражаясь от поверхности измеряемой среды, принимается антенной уровнемера с временной задержкой. Используя разность частот излучаемого и принимаемого сигналов, вычисляется значение уровня измеряемой среды.	Уровнемер радарный МЗМ-РУ-1 предназначен для измерения уровня жидкости (в том числе сжиженных газов) и сыпучих материалов при атмосферном и избыточном давлении.	231231231	t
+8	МЗМ-ЭР-1 электромагнитного расхода	99999	Датчик расхода	Электромагнитный расход	Электромагнитный расход.png	Электромагнитные расходомеры-счетчики ЭМИС-МАГ 270 предназначены для измерений объемного расхода электропроводных жидкостей в прямом и обратном направлении потока. В том числе агрессивных, двухкомпонентных и загрязненных жидкостей с твердыми включениями.\r\n\r\nПрименяются в нефтяной, химической, нефтехимической, металлургической, пищевой промышленности и в коммунальном хозяйстве	Измерение расхода электропроводных жидкостей, в том числе загрязненных и агрессивных сред электромагнитным расходомером.	1232311	t
+6	МЗМ-ВР-1 высокого давления	50000	Датчик расхода	Вихревой расход	Вихревой расход высокого давления.png	Принцип его работы заключается в следующем: электронный блок формирует на датчике-излучателе высокочастотный ультразвуковой сигнал, который проходя через вихревую дорожку, модулируется по фазе и поступает на датчик пьезоприемника. Такой метод обеспечивает виброустойчивость и расширяет динамический диапазон (до значения 1:100).\r\n\r\nТакже для расходомера внедрена автоматическая подстройка уровня сигналов, позволяющая компенсировать загрязнения сенсоров и их деградацию по мере старения прибора.\r\n\r\nВ базовой версии электронный блок поставляется с частотно/импульсным выходом и цифровым выходным сигналом Modbus с интерфейсом RS-485. Однако, по желанию заказчика, приборы могут быть изготовлены с четырехстрочным OLED-индикатором, аналоговым выходным сигналом и цифровым протоколом HART.\r\n\r\nВзрывозащищенное исполнение и широкий температурный диапазон (от -60 до +70 ºC) позволяют эксплуатировать расходомер в экстремальных условиях.\r\n\r\nОн предназначен для измерения объема и объемного расхода жидкостей в трубопроводах систем ППД (поддержания пластового давления), а также других жидкостей при высоком давлении.	Преобразователи расхода могут использоваться в составе автоматических систем управления и контроля, локальных схемах автоматизации с использованием частотно-импульсного сигнала, токового сигнала и цифрового сигнала ModBus (RS485) и HART.	123456	t
+\.
+
+
+--
+-- Data for Name: item_properties; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.item_properties (id, name) FROM stdin;
+1	Измеряемая среда
+2	Спец. исполнение
+3	Взрывозащита
+4	Выходные сигналы
+5	Долговременная стабильность
+6	Рабочая температура, °С
+7	Диапазон измеряемых давлений (мин, макс), МПа
+8	Напряжение питания, В
+9	Погрешность, %
+10	Температура измеряемой среды, °С
+11	Температура окружающей среды, °С
+12	Диапазон перенастройки
+13	Материал мембраны процесса
+14	Заполняющая жидкость
+15	Материал корпуса электронного блока
+16	Межповерочный интервал
+17	Пылевлагозащита
+18	Технологическое присоединение
+19	Вибростойкость
+20	Диаметр условного прохода, мм
+21	Типоразмер
+22	Частота
+23	Диэлектрическая проницаемость среды
+24	Кабельные вводы
+\.
+
+
+--
+-- Data for Name: item_properties_values; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.item_properties_values (item_id, property_id, value) FROM stdin;
+1	1	Газ,Жидкость,Пар
+1	2	Водородное,Высокотемпературное,Кислородное,Криогенное,Морское,Пищевое,Рудничное,Сероводородное,Хлорное
+1	3	1Ex d IIC T6…T4 Gb X,1Ex d ia IIC T6…T4 Gb X,0Ex ia IIB T6…T4 Ga X,0Ex ia IIC T6…T4 Ga X,PO Ex ia I Ma X,PB Ex d I Mb X,PB Ex d ia I Mb X
+1	4	4-20мА + HART с наличием DD
+1	5	Не более 0,1% в течение 10 лет
+1	6	-120...+700
+1	7	0..40
+1	8	10.5...45
+1	9	±0.04,0.065,0.1,0.2 
+1	10	-90...+230 (с разделителем сред)
+1	11	-60..+85
+1	12	до 100:1
+1	13	Нержавеющая сталь 316L,сплав Хастеллой,Тантал,Монель,Никель,316L с золотым напылением
+1	14	Силиконовое масло, Инертное масло
+1	15	Алюминий,Алюминий с защитным слоем,Нержавеющая сталь
+1	16	6 лет
+1	17	IP65,IP66,IP67,IP68
+1	18	М20х1.5,М44х1.25,G1/2 наружная резьба,1” безрезьбовое присоединение,1/2NPT наружная/внутренняя резьба для датчиков штуцерного исполнения,1/4NPT фланцевое присоединение для датчиков фланцевого исполнения.
+1	19	V2,G2 по ГОСТ Р 52931-2008
+3	1	Газ, Жидкость, Пар
+3	2	Водородное, Высокотемпературное, Кислородное, Криогенное, Морское, Пищевое, Рудничное, Сероводородное, Хлорное
+3	3	1Ex d IIC T6…T4 Gb X, 1Ex d ia IIC T6…T4 Gb X, 0Ex ia IIB T6…T4 Ga X, 0Ex ia IIC T6…T4 Ga X, PO Ex ia I Ma X, PB Ex d I Mb X, PB Ex d ia I Mb X
+3	4	4-20 мА + HART с наличием DD
+3	5	Не более 0,1% в течение 10 лет
+3	6	-40...+120
+3	7	0..69
+3	8	10.5...45 
+3	9	±0.065, 0.1, 0.2 
+3	10	-90...+700 (с разделителем сред)
+3	11	-60...+85 с сохран. взрывозащиты
+3	12	до 100:1
+3	13	Нержавеющая сталь 316L, сплав Хастеллой, Тантал, Монель, Никель, 316L с золотым напылением
+3	14	Силиконовое масло, Инертное масло
+3	15	Алюминий, Алюминий с защитным слоем, Нержавеющая сталь
+3	16	6 лет
+3	17	IP65, IP66, IP67, IP68
+3	18	М20х1.5, М44х1.25, G1/2 наружная резьба, 1” безрезьбовое присоединение. 1/2NPT наружная/внутренняя резьба для датчиков штуцерного исполнения, 1/4NPT фланцевое присоединение для датчиков фланцевого исполнения
+3	19	G2 по ГОСТ Р 52931-2008
+4	1	Газ, Жидкость, Пар
+4	2	Водородное, Высокотемпературное, Кислородное, Криогенное, Морское, Пищевое, Рудничное, Сероводородное, Хлорное
+4	3	1Ex d IIC T6…T4 Gb X, 1Ex d ia IIC T6…T4 Gb X, 0Ex ia IIB T6…T4 Ga X, 0Ex ia IIC T6…T4 Ga X, PO Ex ia I Ma X, PB Ex d I Mb X, PB Ex d ia I Mb X
+4	4	4-20 мА + HART с наличием DD
+4	5	Не более 0.1% в течение 10 лет
+4	6	-40...+120
+4	7	0..69
+4	8	10.5...45
+4	9	±0.065, 0.1, 0.2 
+4	10	60..+85
+4	11	-60..+85
+4	12	до 100:1
+4	13	Нержавеющая сталь 316L, сплав Хастеллой, Тантал, Монель, Никель, 316L с золотым напылением
+4	14	Силиконовое масло, Инертное масло
+4	15	Алюминий, Алюминий с защитным слоем, Нержавеющая сталь
+4	16	6 лет
+4	17	IP65,IP66,IP67,IP68
+4	18	М20х1.5, М44х1.25, G1/2 наружная резьба, 1” безрезьбовое присоединение, 1/2NPT наружная/внутренняя резьба для датчиков штуцерного исполнения, 1/4NPT фланцевое присоединение для датчиков фланцевого исполнения.
+4	19	G2 по ГОСТ Р 52931-2008
+5	1	Жидкость
+5	2	Сероводородное
+5	3	1 Exd IIC T5 Gb X
+5	4	Частотно-импульсный, Аналоговый: токовый 4…20мА, Цифровой: RS-485 с протоколом Modbus RTU, HART, USB (технологический)
+5	8	±1.0, ±1.5, ±3.0
+5	9	0...+100
+5	10	-60...+70
+5	11	-60...+70
+5	16	4 года
+5	17	IP 66/68
+5	20	50, 80, 100, 150
+7	1	Газ, Жидкость, Пар
+7	2	Водородное, Высокотемпературное, Кислородное, Криогенное, Морское, Пищевое, Рудничное, Сероводородное, Хлорное
+7	3	1 Exd IIC (T1-T6) Gb X, 1 Exib IIB/IIС (T1-T6) Gb X, 1 Exia IIB/IIС (T1-T6) Gb X, 0 Exia IIB/IIC (T1-T6) Gb Х, РВ Exib IМb Х, РО Exia IMa Х, РВ ExdI Mb Х
+7	4	Частотно-импульсный, Аналоговый, токовый 4…20мА, Цифровой: RS-485 с протоколом Modbus RTU, HART, USB (технологический)
+7	8	12-30
+7	9	±0,5,±0,7
+7	10	-200...+450
+7	11	-60...+70
+7	16	5 лет
+7	17	IP 66/68, IP 66 (уровня РВ; РВИ; РО; РО-РВ)
+7	20	15...300
+8	1	Жидкость
+8	2	Объём
+8	3	1Ex db IIC T6…T3 Gb X, 1Ex db [ia] IIC Т6…Т3 Gb X, РВ Ex db I Mb X, Ex tb IIIC T80°C...T180°C Db X
+8	4	Частотно-импульсный, Аналоговый: токовый 4…20мА, Цифровой: RS-485 с протоколом Modbus RTU, HART, Сигнал тревоги
+8	8	24 В постоянного тока, 220 В переменного тока
+8	9	±0.5
+8	10	-40...+180
+8	11	-60...+70
+8	16	5 лет
+8	17	IP 65, IP 66, IP 67, IP 66/67
+8	20	15...600
+9	1	Жидкость, Сжиженные газы, Сыпучие
+9	3	0Ex ia IIC T6…T1 Ga X, Ex ia IIIC T80°C…T450°C, 0Ex ia IIB T6…T1 Ga X, Ex ia IIIB T80°C…T450°C, 1Ex db IIC T6…T1 Gb X, Ex tb IIIC T80°C...T450°C, 1Ex db ia IIC T6...T1 Gb X.
+9	4	Аналоговый 4-20 мА / цифровой HART v7
+9	8	24 В постоянного, 220 В переменного
+9	10	от -60 до +450
+9	11	от -60…+85, -70 °С до +85 °С с термочехлом
+9	17	IP66,IP67,IP68
+9	15	Корпус: Алюминий / нержавеющая сталь. Антенна: Стали – 304/316; фторопласт – PTFE (в зависимости от типа антенны)
+9	18	Фланцевое присоединение от Ду50, фланцы ГОСТ/EN/ASME, Резьбовое присоединение от 1.5 дюймов, тип резьбы – G и NPT
+9	22	6 ГГц – конические/стержневые, 26 ГГц – конические/параболические/противокоррозионные, 80 ГГц – линзовые антенны
+9	23	от 1.4 (в зависимости от типа антенны и измеряемой среды)
+10	1	Жидкость, Сжиженные газы, Сыпучие
+10	3	0Ex ia IIC T6…T1, Ga X 0Ex ia IIB T6…T1 Ga X,, 1Ex db IIC T6…T1 Gb X, 1Ex db ia IIC T6…T1 Gb X, Ex ia IIIC T80°….T450°C Da X, Ex ia IIIB T80°….T450°C Da X, Ex tb IIIC T80°….T450°C Db X
+10	4	Аналоговый: 4-20 мА Цифровой: HART v7 дополнительный аналоговый выход 4-20 мА:
+10	8	постоянного тока от 18 до 30, переменного тока от 187 до 242 частота переменного тока 50±1 Гц
+10	10	от -196 до +445
+10	11	от -60…+80
+10	17	IP66/IP67, IP66/IP68
+10	15	
+10	18	Антенна: Стали – 304/316/12Х18Н10Т; фторопласт – PTFE; Корпус: Алюминий / нержавеющая сталь
+10	22	~ 1 ГГц
+10	23	от 1,4
+\.
+
+
+--
+-- Data for Name: item_spec_files; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.item_spec_files (id, name, link, picture) FROM stdin;
+1	Руководство	Документация абсолютное давление.pdf	logos/pdf_icon.png
+3	Руководство	Документация избыточное давление.pdf	logos/pdf_icon.png
+4	Руководство	Документация гидростатическое давление.pdf	logos/pdf_icon.png
+5	Руководство	вихреакустический.pdf	logos/pdf_icon.png
+6	Руководство	Документация вихревой высокого давления.pdf	logos/pdf_icon.png
+7	Руководство	Документация вихревой расходомер.pdf	logos/pdf_icon.png
+8	Руководство	Электромагнитный расхо.pdf	logos/pdf_icon.png
+9	Руководство	Уровнемер радарный.pdf	logos/pdf_icon.png
+10	Руководство	Уровнемер волноводный.pdf	logos/pdf_icon.png
+\.
+
+
+--
+-- Data for Name: schema_migrations; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.schema_migrations (version, dirty) FROM stdin;
+3	f
+\.
+
+
+--
+-- Data for Name: spec; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.spec (id, item_id, item_patch, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: user_applications; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.user_applications (id, user_id, email, first_name, second_name, login, phone_number, company, address, city, order_date, items, order_status) FROM stdin;
+1	2	testUser@gmail.com	НИКИТОС	НИКИТОС	AdminUser	89094882121	mmk	доменщиков	магнитка	2026-07-02	[{"id": 2, "name": "МЗМ-ДД1 Дифференциального давления", "count": 4, "price": 30000, "props": {"Взрывозащита": "1Ex d ia IIC T6…T4 Gb X", "Погрешность, %": "0.065", "Вибростойкость": "V2", "Пылевлагозащита": "IP65", "Спец. исполнение": "Высокотемпературное", "Выходные сигналы": "4-20мА + HART с наличием DD", "Измеряемая среда": "Жидкость", "Заполняющая жидкость": "Силиконовое масло", "Напряжение питания, В": "10.5...45", "Диапазон перенастройки": "до 100:1", "Межповерочный интервал": "6 лет", "Рабочая температура, °С": "-120...+700", "Материал мембраны процесса": "Нержавеющая сталь 316L", "Долговременная стабильность": "Не более 0", "Технологическое присоединение": "М44х1.25", "Температура измеряемой среды, °С": "-90...+230 (с разделителем сред)", "Температура окружающей среды, °С": "-60..+85", "Материал корпуса электронного блока": "Алюминий", "Диапазон измеряемых давлений (мин, макс), МПа": "0..40"}, "item_id": 1, "item_type": "Датчик давления", "item_article": "9823", "item_picture": "Датчик дифференциального давления.png", "item_spec_id": 0, "item_description": "Данные приборы измеряют давление в трубах, сосудах, аппаратах, паровых и водогрейных котлах, в качестве точки отсчета при этом используется давления равного абсолютному нулю. Обеспечивается такое измерение наличием специальной камеры, из которой при изготовлении прибора откачивается воздух. Эта камера располагается в полости сенсора, а с другой стороны на чувствительный элемент воздействует давление измеряемой среды. Электронный блок производит расчет и выводит полученное значение на дисплей или передает с помощью выходных сигналов.\\r\\n\\r\\nЧувствительным элементом служит монокристаллическая кремниевая мембрана, на которой расположен мост Уитстона, плечи моста - пьезорезисторы. Для защиты сенсора от воздействия агрессивной измеряемой и окружающих сред, в отдельных модификациях предусмотрены разделительные мембраны и заполняющая жидкость. При этом есть возможность выбрать тип заполняющей жидкости и материалы мембраны. В руководстве по эксплуатации прописаны все варианты изготовления, в том числе электронного блока и корпуса приборов с учетом условий эксплуатации.", "item_secondary_type": "Дифференциальное давление"}]	Отменен
+\.
+
+
+--
+-- Name: customer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.customer_id_seq', 3, true);
+
+
+--
+-- Name: item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.item_id_seq', 11, true);
+
+
+--
+-- Name: item_properties_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.item_properties_id_seq', 24, true);
+
+
+--
+-- Name: spec_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.spec_id_seq', 1, false);
+
+
+--
+-- Name: user_applications_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.user_applications_id_seq', 1, true);
+
+
+--
+-- Name: customer customer_email_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.customer
+    ADD CONSTRAINT customer_email_key UNIQUE (email);
+
+
+--
+-- Name: customer customer_login_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.customer
+    ADD CONSTRAINT customer_login_key UNIQUE (login);
+
+
+--
+-- Name: customer customer_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.customer
+    ADD CONSTRAINT customer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: item item_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.item
+    ADD CONSTRAINT item_name_key UNIQUE (name);
+
+
+--
+-- Name: item item_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.item
+    ADD CONSTRAINT item_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: item_properties item_properties_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.item_properties
+    ADD CONSTRAINT item_properties_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: item_properties_values item_properties_values_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.item_properties_values
+    ADD CONSTRAINT item_properties_values_pkey PRIMARY KEY (item_id, property_id);
+
+
+--
+-- Name: item_spec_files item_spec_files_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.item_spec_files
+    ADD CONSTRAINT item_spec_files_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: spec spec_item_patch_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.spec
+    ADD CONSTRAINT spec_item_patch_key UNIQUE (item_patch);
+
+
+--
+-- Name: spec spec_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.spec
+    ADD CONSTRAINT spec_name_key UNIQUE (name);
+
+
+--
+-- Name: spec spec_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.spec
+    ADD CONSTRAINT spec_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: user_applications user_applications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_applications
+    ADD CONSTRAINT user_applications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: customer_delivery_info customer_delivery_info_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.customer_delivery_info
+    ADD CONSTRAINT customer_delivery_info_id_fkey FOREIGN KEY (id) REFERENCES public.customer(id);
+
+
+--
+-- Name: customer_item customer_item_customer_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.customer_item
+    ADD CONSTRAINT customer_item_customer_id_fkey FOREIGN KEY (customer_id) REFERENCES public.customer(id);
+
+
+--
+-- Name: customer_item customer_item_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.customer_item
+    ADD CONSTRAINT customer_item_item_id_fkey FOREIGN KEY (item_id) REFERENCES public.item(id) ON DELETE CASCADE;
+
+
+--
+-- Name: customer_personal_info customer_personal_info_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.customer_personal_info
+    ADD CONSTRAINT customer_personal_info_id_fkey FOREIGN KEY (id) REFERENCES public.customer(id);
+
+
+--
+-- Name: item_properties_values item_properties_values_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.item_properties_values
+    ADD CONSTRAINT item_properties_values_item_id_fkey FOREIGN KEY (item_id) REFERENCES public.item(id) ON DELETE CASCADE;
+
+
+--
+-- Name: item_properties_values item_properties_values_property_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.item_properties_values
+    ADD CONSTRAINT item_properties_values_property_id_fkey FOREIGN KEY (property_id) REFERENCES public.item_properties(id);
+
+
+--
+-- Name: item_spec_files item_spec_files_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.item_spec_files
+    ADD CONSTRAINT item_spec_files_id_fkey FOREIGN KEY (id) REFERENCES public.item(id) ON DELETE CASCADE;
+
+
+--
+-- Name: spec spec_item_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.spec
+    ADD CONSTRAINT spec_item_id_fkey FOREIGN KEY (item_id) REFERENCES public.item(id) ON DELETE CASCADE;
+
+
+--
+-- Name: user_applications user_applications_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.user_applications
+    ADD CONSTRAINT user_applications_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.customer(id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict ceRFaZYtq1SxoqqVgXe82mfV2erhlmr1WKaRXgD7shq9ryfQpsxjsWxUseca1oW
+
