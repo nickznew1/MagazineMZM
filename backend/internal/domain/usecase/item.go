@@ -1,7 +1,7 @@
 package usecase
 
 import (
-	"myWebApp/backend/internal/domain/model"
+	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 )
 
 type ItemUseCase struct {

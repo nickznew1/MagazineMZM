@@ -3,7 +3,8 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"myWebApp/backend/internal/domain/model"
+
+	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 
 	"golang.org/x/crypto/bcrypt"
 )

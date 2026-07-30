@@ -3,16 +3,16 @@ package routes
 import (
 	"database/sql"
 	"log"
-	"myWebApp/backend/internal/domain/repository"
-	"myWebApp/backend/internal/domain/service"
-	"myWebApp/backend/internal/domain/usecase"
-	"myWebApp/backend/internal/middleware"
-	"myWebApp/backend/pkg/auth"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/nickznew1/MagazineMZM/backend/internal/domain/repository"
+	"github.com/nickznew1/MagazineMZM/backend/internal/domain/service"
+	"github.com/nickznew1/MagazineMZM/backend/internal/domain/usecase"
+	"github.com/nickznew1/MagazineMZM/backend/internal/middleware"
+	"github.com/nickznew1/MagazineMZM/backend/pkg/auth"
 	"net/http"
 	"os"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 )
 

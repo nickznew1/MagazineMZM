@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"myWebApp/backend/internal/domain/model"
 	"strconv"
+
+	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 )
 
 type cartRepo struct {

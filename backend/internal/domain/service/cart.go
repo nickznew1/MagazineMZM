@@ -3,8 +3,9 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"myWebApp/backend/internal/domain/model"
-	"myWebApp/backend/internal/domain/usecase"
+
+	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
+	"github.com/nickznew1/MagazineMZM/backend/internal/domain/usecase"
 	"net/http"
 )
 
