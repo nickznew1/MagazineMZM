@@ -4,14 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"myWebApp/backend/internal/domain/model"
-	"myWebApp/backend/internal/domain/usecase"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
+	"github.com/nickznew1/MagazineMZM/backend/internal/domain/usecase"
 )
 
 type ItemService struct {

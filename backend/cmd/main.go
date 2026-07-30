@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+
 	_ "github.com/lib/pq"
-	"myWebApp/backend/database"
-	"myWebApp/backend/internal/routes"
+	"github.com/nickznew1/MagazineMZM/backend/database"
+	"github.com/nickznew1/MagazineMZM/backend/internal/routes"
 )
 
 func main() {

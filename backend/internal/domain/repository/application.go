@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"myWebApp/backend/internal/domain/model"
 	"time"
+
+	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 )
 
 type ApplicationRepo struct {

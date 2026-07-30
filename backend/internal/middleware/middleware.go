@@ -3,9 +3,10 @@ package middleware
 import (
 	"context"
 	"encoding/json"
-	"myWebApp/backend/pkg/auth"
 	"net/http"
 	"strings"
+
+	"github.com/nickznew1/MagazineMZM/backend/pkg/auth"
 )
 
 type Manager struct {
