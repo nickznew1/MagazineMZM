@@ -2,7 +2,8 @@ package usecase
 
 import (
 	"fmt"
-	"myWebApp/backend/internal/domain/model"
+
+	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 )
 
 type UserUseCase struct {

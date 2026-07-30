@@ -1,6 +1,6 @@
 package usecase
 
-import "myWebApp/backend/internal/domain/model"
+import "github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 
 type ApplicationUseCase struct {
 	repo model.ApplicationRepository

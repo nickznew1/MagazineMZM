@@ -3,11 +3,12 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"myWebApp/backend/internal/domain/model"
-	"myWebApp/backend/internal/domain/usecase"
-	"myWebApp/backend/pkg/auth"
 	"net/http"
 	"strconv"
+
+	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
+	"github.com/nickznew1/MagazineMZM/backend/internal/domain/usecase"
+	"github.com/nickznew1/MagazineMZM/backend/pkg/auth"
 )
 
 type UserService struct {
