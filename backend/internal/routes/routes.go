@@ -4,12 +4,12 @@ import (
 	"database/sql"
 	"log"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/repository"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/service"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/usecase"
 	"github.com/nickznew1/MagazineMZM/backend/internal/middleware"
 	"github.com/nickznew1/MagazineMZM/backend/pkg/auth"
-
 	"net/http"
 	"os"
 
