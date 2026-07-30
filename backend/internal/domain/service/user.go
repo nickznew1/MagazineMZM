@@ -3,7 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/go-chi/chi/v5"
+
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/usecase"
 	"github.com/nickznew1/MagazineMZM/backend/pkg/auth"
