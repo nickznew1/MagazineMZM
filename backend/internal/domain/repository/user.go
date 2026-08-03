@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"sync"
 
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 
@@ -70,8 +71,80 @@ func (r *userRepo) UserAuth(input model.User) (model.User, error) {
 	return user, nil
 }
 
-func (r *userRepo) UserInfo(id string) (model.User, error) {
-	var user model.User
+func (r *userRepo) FetchProfile(id string) (model.UserSummary, error) {
+	var user model.UserSummary
+
+	profileCh := make(chan model.UserMerge)
+
+	wg := new(sync.WaitGroup)
+
+	wg.Add(3)
+
+	go func() {
+		defer wg.Done()
+		data, err := r.FetchProfileInfo(id)
+
+		profileCh <- data{
+			kind: "profile_info",
+			data: data,
+			err:  err,
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		data, err := r.FetchProfilePersonalInfo(id)
+
+		profileCh <- data{
+			kind: "personal_info",
+			data: data,
+			err:  err,
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		data, err := r.FetchProfileDeliveryInfo(id)
+
+		profileCh <- data{
+			kind: "delivery_info",
+			data: data,
+			err:  err,
+		}
+	}
+
+	go func() {
+		wg.Wait()
+		close(profileCh)
+	}()
+
+	for result := range profileCh {
+		if result.err != nil {
+			return nil, err
+		}
+
+		switch result.kind {
+		case "profile_info":
+			if data, ok := result.data.(model.UserOrdinaryInfo); ok {
+				user.UserOrdinary = &data
+			}
+
+		case "personal_info":
+			if data, ok := result.data.(model.UserPersonalInfo); ok {
+				user.UserPersonal = &data
+			}
+
+		case "delivery_info":
+			if data, ok := result.data.(model.UserDeliveryInfo); ok {
+				user.UserDelivery = &data
+			}
+		}
+	}
+
+	return user, nil
+}
+
+func (r *userRepo) FetchProfileInfo(id string) (model.User, error) {
 	err := r.db.QueryRow("SELECT id,login,email,user_role from customer WHERE id =$1", id).Scan(&user.Id, &user.Login, &user.Email, &user.UserRole)
 	if err != nil {
 		fmt.Println("user doesnt found")
@@ -80,17 +153,22 @@ func (r *userRepo) UserInfo(id string) (model.User, error) {
 	return user, nil
 }
 
-func (r *userRepo) UserPersonalInfo(id string) (model.UserPersonalInfo, error) {
-	var userInfo model.UserPersonalInfo
-
-	fmt.Println("Get user personal info")
-	fmt.Println(id)
+func (r *userRepo) FetchProfilePersonalInfo(id string) (model.UserPersonalInfo, error) {
 	err := r.db.QueryRow("SELECT id,company, first_name, second_name from customer_personal_info WHERE id=$1", id).Scan(&userInfo.Id, &userInfo.Company, &userInfo.FirstName, &userInfo.SecondName)
 	if err != nil {
 		fmt.Println("user doesnt found")
 		return userInfo, nil
 	}
 	return userInfo, err
+}
+
+func (r *userRepo) FetchProfileDeliveryInfo(id string) (model.UserDeliveryInfo, error) {
+	err := r.db.QueryRow("SELECT id,phone_number, city, address from customer_delivery_info WHERE id = $1", id).Scan(&userInfo.Id, &userInfo.PhoneNumber, &userInfo.City, &userInfo.Address)
+	if err != nil {
+		fmt.Println("user doesnt found for delivery info")
+		return userInfo, nil
+	}
+	return userInfo, nil
 }
 
 func (r *userRepo) RecordPersonalInfo(input model.UserPersonalInfo) (model.UserPersonalInfo, error) {
@@ -118,17 +196,6 @@ func (r *userRepo) UpdatePersonalInfo(input model.UserPersonalInfo) (model.UserP
 	if err != nil {
 		fmt.Println("error while updating delivery info")
 		return userInfo, err
-	}
-	return userInfo, nil
-}
-
-func (r *userRepo) UserDeliveryInfo(id string) (model.UserDeliveryInfo, error) {
-	var userInfo model.UserDeliveryInfo
-	fmt.Println("get user delivery info")
-	err := r.db.QueryRow("SELECT id,phone_number, city, address from customer_delivery_info WHERE id = $1", id).Scan(&userInfo.Id, &userInfo.PhoneNumber, &userInfo.City, &userInfo.Address)
-	if err != nil {
-		fmt.Println("user doesnt found for delivery info")
-		return userInfo, nil
 	}
 	return userInfo, nil
 }

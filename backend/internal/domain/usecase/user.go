@@ -26,9 +26,6 @@ func (u *UserUseCase) UserAuth(input model.User) (model.User, error) {
 	return u.repo.UserAuth(input)
 }
 
-func (u *UserUseCase) UserPersonalInfo(id string) (model.UserPersonalInfo, error) {
-	return u.repo.UserPersonalInfo(id)
-}
 func (u *UserUseCase) RecordPersonalInfo(input model.UserPersonalInfo) (model.UserPersonalInfo, error) {
 	return u.repo.RecordPersonalInfo(input)
 }
@@ -57,6 +54,18 @@ func (u *UserUseCase) GetAllUsers() ([]model.User, error) {
 	return u.repo.GetAllUsers()
 }
 
-func (u *UserUseCase) UserInfo(id string) (model.User, error) {
-	return u.repo.UserInfo(id)
+func (u *UserUseCase) FetchProfile(id string) (model.UserSummary, error) {
+	return u.repo.FetchProfile(id)
+}
+
+func (u *UserUseCase) FetchProfileInfo(id string) (model.UserOrdinaryInfo, error) {
+	return u.repo.FetchProfileInfo(id)
+}
+
+func (u *UserUseCase) FetchProfilePersonalInfo(id string) (model.UserPersonalInfo, error) {
+	return u.repo.FetchProfilePersonalInfo(id)
+}
+
+func (u *UserUseCase) FetchProfileDeliveryInfo(id string) (model.UserDeliveryInfo, error) {
+	return u.repo.FetchProfileDeliveryInfo(id)
 }

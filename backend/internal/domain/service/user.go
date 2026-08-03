@@ -81,13 +81,14 @@ func (h *UserService) GetUserProfile(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusUnauthorized, "invalid user id format")
 		return
 	}
-	userId, err := h.useCase.UserInfo(idStr)
+	userId, err := h.useCase.FetchProfile(idStr)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "id doesnt find")
 		return
 	}
-	userInfo, _ := h.useCase.UserPersonalInfo(idStr)
-	userDelivery, _ := h.useCase.UserDeliveryInfo(idStr)
+
+	/*userInfo, _ := h.useCase.UserPersonalInfo(idStr)
+	userDelivery, _ := h.useCase.UserDeliveryInfo(idStr)*/
 
 	respondWithJSON(w, http.StatusOK, map[string]interface{}{
 		"id":       userId.Id,
