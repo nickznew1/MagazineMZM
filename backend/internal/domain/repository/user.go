@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"sync"
 
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 
@@ -32,7 +31,6 @@ func (r *userRepo) GetUserById(input model.UserOrdinaryInfo) (model.UserOrdinary
 }
 
 func (r *userRepo) CreateUser(input model.UserOrdinaryInfo) (model.UserOrdinaryInfo, error) {
-
 	var customer model.UserOrdinaryInfo
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), 12)
 	if err != nil {
@@ -69,79 +67,6 @@ func (r *userRepo) UserAuth(input model.UserOrdinaryInfo) (model.UserOrdinaryInf
 		return user, err
 	}
 	fmt.Println("user Auth", input.Id)
-	return user, nil
-}
-
-func (r *userRepo) FetchProfile(id string) (model.UserSummary, error) {
-	var user model.UserSummary
-
-	profileCh := make(chan model.UserMerge)
-
-	wg := new(sync.WaitGroup)
-
-	wg.Add(3)
-
-	go func() {
-		defer wg.Done()
-		data, err := r.FetchProfileInfo(id)
-
-		profileCh <- model.UserMerge{
-			Kind:  "profile_info",
-			Data:  data,
-			Error: err,
-		}
-	}()
-
-	go func() {
-		defer wg.Done()
-		data, err := r.FetchProfilePersonalInfo(id)
-
-		profileCh <- model.UserMerge{
-			Kind:  "personal_info",
-			Data:  data,
-			Error: err,
-		}
-	}()
-
-	go func() {
-		defer wg.Done()
-		data, err := r.FetchProfileDeliveryInfo(id)
-
-		profileCh <- model.UserMerge{
-			Kind:  "delivery_info",
-			Data:  data,
-			Error: err,
-		}
-	}()
-
-	go func() {
-		wg.Wait()
-		close(profileCh)
-	}()
-
-	for result := range profileCh {
-		if result.Error != nil {
-			return user, result.Error
-		}
-
-		switch result.Kind {
-		case "profile_info":
-			if data, ok := result.Data.(model.UserOrdinaryInfoOut); ok {
-				user.UserOrdinary = &data
-			}
-
-		case "personal_info":
-			if data, ok := result.Data.(model.UserPersonalInfoOut); ok {
-				user.UserPersonal = &data
-			}
-
-		case "delivery_info":
-			if data, ok := result.Data.(model.UserDeliveryInfoOut); ok {
-				user.UserDelivery = &data
-			}
-		}
-	}
-
 	return user, nil
 }
 

@@ -51,10 +51,6 @@ func (u *UserUseCase) GetAllUsers() ([]model.UserOrdinaryInfo, error) {
 	return u.repo.GetAllUsers()
 }
 
-func (u *UserUseCase) FetchProfile(id string) (model.UserSummary, error) {
-	return u.repo.FetchProfile(id)
-}
-
 func (u *UserUseCase) FetchProfileInfo(id string) (model.UserOrdinaryInfoOut, error) {
 	return u.repo.FetchProfileInfo(id)
 }

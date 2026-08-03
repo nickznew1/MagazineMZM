@@ -40,8 +40,7 @@ type UserDeliveryInfo struct {
 }
 
 type UserDeliveryInfoOut struct {
-	Id int `json:"id"`
-
+	Id          int    `json:"id"`
 	PhoneNumber string `json:"phone_number"`
 	City        string `json:"city"`
 	Address     string `json:"address"`
@@ -69,7 +68,6 @@ type UserRepository interface {
 	GetUserById(input UserOrdinaryInfo) (UserOrdinaryInfo, error)
 	CreateUser(input UserOrdinaryInfo) (UserOrdinaryInfo, error)
 	UserAuth(input UserOrdinaryInfo) (UserOrdinaryInfo, error)
-	FetchProfile(id string) (UserSummary, error)
 	FetchProfileInfo(id string) (UserOrdinaryInfoOut, error)
 	FetchProfilePersonalInfo(id string) (UserPersonalInfoOut, error)
 	FetchProfileDeliveryInfo(id string) (UserDeliveryInfoOut, error)
