@@ -36,7 +36,7 @@ func respondWithError(w http.ResponseWriter, statusCode int, message string) {
 
 func (h *UserService) CreateUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("CreateUser")
-	var input model.User
+	var input model.UserOrdinaryInfo
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Неверные данные")
 		return
@@ -64,7 +64,7 @@ func (h *UserService) GetUser(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusUnauthorized, "invalid user id format")
 		return
 	}
-	userId, err := h.useCase.UserInfo(idStr)
+	userId, err := h.useCase.FetchProfileInfo(idStr)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "id doesnt find")
 		return
@@ -90,13 +90,8 @@ func (h *UserService) GetUserProfile(w http.ResponseWriter, r *http.Request) {
 	/*userInfo, _ := h.useCase.UserPersonalInfo(idStr)
 	userDelivery, _ := h.useCase.UserDeliveryInfo(idStr)*/
 
-	respondWithJSON(w, http.StatusOK, map[string]interface{}{
-		"id":       userId.Id,
-		"login":    userId.Login,
-		"email":    userId.Email,
-		"personal": userInfo,
-		"delivery": userDelivery,
-	})
+	respondWithJSON(w, http.StatusOK, userId)
+
 }
 
 func (h *UserService) InsertPersonalInfo(w http.ResponseWriter, r *http.Request) {
@@ -163,7 +158,7 @@ func (h *UserService) UpdateDeliveryInfo(w http.ResponseWriter, r *http.Request)
 
 func (h *UserService) UserAuth(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("user authentification")
-	var input model.User
+	var input model.UserOrdinaryInfo
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Неверно отправленные данные")
 		return
@@ -201,7 +196,7 @@ func (h *UserService) UserPasswordChange(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *UserService) UserEmailChange(w http.ResponseWriter, r *http.Request) {
-	var input model.User
+	var input model.UserOrdinaryInfo
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Неверные данные")
 		return
@@ -232,10 +227,10 @@ func (h *UserService) GetCheckoutInfo(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "invalid user id format")
 		return
 	}
-	userInfo, _ := h.useCase.UserPersonalInfo(idStr)
-	userDelivery, _ := h.useCase.UserDeliveryInfo(idStr)
+	userInfo, _ := h.useCase.FetchProfilePersonalInfo(idStr)
+	userDelivery, _ := h.useCase.FetchProfileDeliveryInfo(idStr)
 	///*cart, _ := h.cartUseCase.GetCart(idStr)*/
-	user, _ := h.useCase.UserInfo(idStr)
+	user, _ := h.useCase.FetchProfileInfo(idStr)
 
 	respondWithJSON(w, http.StatusCreated, map[string]interface{}{
 		"user":     user,

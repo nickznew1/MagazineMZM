@@ -30,11 +30,11 @@ const ProfileDelivery =({profile}) => {
     }
 
     useEffect(() => {
-        if (user?.delivery) {
+        if (user?.user_delivery) {
            reset ({
-               phone_number: user.delivery.phone_number || "",
-               city: user.delivery.city || "",
-               second_name: user.delivery.second_name || "",
+               phone_number: user.user_delivery.phone_number || "",
+               city: user.user_delivery.city || "",
+               second_name: user.user_delivery.second_name || "",
            })
         }
     }, [user,reset]);
@@ -42,7 +42,7 @@ const ProfileDelivery =({profile}) => {
 
     const handleSubmitDelivery = async (data) => {
         const payload = {
-            id:user.profileData.id,
+            id:user.profileData.user_ordinary.id,
             ...data
         };
         try {
@@ -72,7 +72,7 @@ const ProfileDelivery =({profile}) => {
 
     const handleUpdateDelivery = async (data) => {
         const payload = {
-            id:user.profileData.id,
+            id:user.profileData.user_ordinary.id,
             ...data,
         };
         try {
@@ -90,7 +90,7 @@ const ProfileDelivery =({profile}) => {
                 ...user,
                 profileData:{
                     ...user.profileData,
-                    delivery:payload
+                    user_delivery:payload
                 }
             })
             setVisibleDelivery(false);
@@ -102,7 +102,7 @@ const ProfileDelivery =({profile}) => {
     return(
 
         <div className = "user-profile-delivery-wrapper">
-        { user.profileData.delivery?.id ? (
+        { user.profileData.user_delivery?.id ? (
             <>
             <div className = "user-profile-change__btn-wrapper">
                     <div className = "user-profile-change__btn">
@@ -157,9 +157,9 @@ const ProfileDelivery =({profile}) => {
                             </form>
                     ) : (
                         <div className = "user-delivery-info">
-                            <span>Ваш номер телефона: {user.profileData.delivery.phone_number}</span>
-                            <span>Город: {user.profileData.delivery.city}</span>
-                            <span>Адрес: {user.profileData.delivery.address}</span>
+                            <span>Ваш номер телефона: {user.profileData.user_delivery.phone_number}</span>
+                            <span>Город: {user.profileData.user_delivery.city}</span>
+                            <span>Адрес: {user.profileData.user_delivery.address}</span>
                         </div>
 
                     )}

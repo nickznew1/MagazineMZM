@@ -37,13 +37,15 @@ const ProfilePersonal = ({profile}) => {
 
 
     const { user, setProfile} = profile;
+    console.log(profile)
+
 
     useEffect(() => {
         if (user?.personal) {
             reset({
-                company:user.personal.company || "",
-                first_name:user.personal.first_name || "",
-                second_name:user.personal.second_name || "",
+                company:user.user_personal.company || "",
+                first_name:user.user_personal.first_name || "",
+                second_name:user.user_personal.second_name || "",
             })
         }
     }, [user, reset]);
@@ -55,7 +57,7 @@ const ProfilePersonal = ({profile}) => {
 
     const handleSubmitPersonal = async (data) => {
         const payload = {
-              id: user.profileData.id,
+              id: user.profileData.user_ordinary.id,
             ...data
         };
         try {
@@ -84,7 +86,7 @@ const ProfilePersonal = ({profile}) => {
 
     const handleUpdatePersonal = async (data) => {
         const payload = {
-            id: user.profileData.id,
+            id: user.profileData.user_ordinary.id,
             ...data
         };
         try {
@@ -102,7 +104,7 @@ const ProfilePersonal = ({profile}) => {
                 ...user,
                 profileData:{
                     ...user.profileData,
-                    personal:payload
+                    user_personal:payload
                 }
             })
             setVisiblePersonal(false);
@@ -115,7 +117,7 @@ const ProfilePersonal = ({profile}) => {
         <>
         <h1>Ваши данные:</h1>
         <div className = "user-profile-personal-wrapper">
-        {user.profileData.personal?.id ? (
+        {user.profileData.user_personal?.id ? (
                 <>
                 <div className = "user-profile-change__btn-wrapper">
                 <div className = "user-profile-change__btn">
@@ -171,9 +173,9 @@ const ProfilePersonal = ({profile}) => {
 
                     ) : (
                         <div className="user-profile-personal-info">
-                            <span>Ваше имя: {user.profileData.personal.first_name}</span>
-                            <span>Ваша фамилия: {user.profileData.personal.second_name}</span>
-                            <span>Ваша компания: {user.profileData.personal.company}</span>
+                            <span>Ваше имя: {user.profileData.user_personal.first_name}</span>
+                            <span>Ваша фамилия: {user.profileData.user_personal.second_name}</span>
+                            <span>Ваша компания: {user.profileData.user_personal.company}</span>
                         </div>
                     )}
                 </>

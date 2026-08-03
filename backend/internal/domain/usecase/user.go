@@ -16,13 +16,13 @@ func NewUserUseCase(r model.UserRepository) *UserUseCase {
 	return &UserUseCase{repo: r}
 }
 
-func (u *UserUseCase) GetUserById(input model.User) (model.User, error) {
+func (u *UserUseCase) GetUserById(input model.UserOrdinaryInfo) (model.UserOrdinaryInfo, error) {
 	return u.repo.GetUserById(input)
 }
-func (u *UserUseCase) CreateUser(input model.User) (model.User, error) {
+func (u *UserUseCase) CreateUser(input model.UserOrdinaryInfo) (model.UserOrdinaryInfo, error) {
 	return u.repo.CreateUser(input)
 }
-func (u *UserUseCase) UserAuth(input model.User) (model.User, error) {
+func (u *UserUseCase) UserAuth(input model.UserOrdinaryInfo) (model.UserOrdinaryInfo, error) {
 	return u.repo.UserAuth(input)
 }
 
@@ -32,9 +32,6 @@ func (u *UserUseCase) RecordPersonalInfo(input model.UserPersonalInfo) (model.Us
 
 func (u *UserUseCase) UpdatePersonalInfo(input model.UserPersonalInfo) (model.UserPersonalInfo, error) {
 	return u.repo.UpdatePersonalInfo(input)
-}
-func (u *UserUseCase) UserDeliveryInfo(id string) (model.UserDeliveryInfo, error) {
-	return u.repo.UserDeliveryInfo(id)
 }
 
 func (u *UserUseCase) RecordDeliveryInfo(input model.UserDeliveryInfo) (model.UserDeliveryInfo, error) {
@@ -46,11 +43,11 @@ func (u *UserUseCase) UpdateDeliveryInfo(input model.UserDeliveryInfo) (model.Us
 func (u *UserUseCase) UserPasswordChange(input model.PasswordChange) (model.PasswordChange, error) {
 	return u.repo.UserPasswordChange(input)
 }
-func (u *UserUseCase) UserChangeEmail(input model.User) (model.User, error) {
+func (u *UserUseCase) UserChangeEmail(input model.UserOrdinaryInfo) (model.UserOrdinaryInfo, error) {
 	return u.repo.UserChangeEmail(input)
 }
 
-func (u *UserUseCase) GetAllUsers() ([]model.User, error) {
+func (u *UserUseCase) GetAllUsers() ([]model.UserOrdinaryInfo, error) {
 	return u.repo.GetAllUsers()
 }
 
@@ -58,14 +55,14 @@ func (u *UserUseCase) FetchProfile(id string) (model.UserSummary, error) {
 	return u.repo.FetchProfile(id)
 }
 
-func (u *UserUseCase) FetchProfileInfo(id string) (model.UserOrdinaryInfo, error) {
+func (u *UserUseCase) FetchProfileInfo(id string) (model.UserOrdinaryInfoOut, error) {
 	return u.repo.FetchProfileInfo(id)
 }
 
-func (u *UserUseCase) FetchProfilePersonalInfo(id string) (model.UserPersonalInfo, error) {
+func (u *UserUseCase) FetchProfilePersonalInfo(id string) (model.UserPersonalInfoOut, error) {
 	return u.repo.FetchProfilePersonalInfo(id)
 }
 
-func (u *UserUseCase) FetchProfileDeliveryInfo(id string) (model.UserDeliveryInfo, error) {
+func (u *UserUseCase) FetchProfileDeliveryInfo(id string) (model.UserDeliveryInfoOut, error) {
 	return u.repo.FetchProfileDeliveryInfo(id)
 }

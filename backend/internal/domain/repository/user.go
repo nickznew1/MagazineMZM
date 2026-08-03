@@ -19,8 +19,8 @@ func NewUserRepo(db *sql.DB) model.UserRepository {
 		db: db}
 }
 
-func (r *userRepo) GetUserById(input model.User) (model.User, error) {
-	var user model.User
+func (r *userRepo) GetUserById(input model.UserOrdinaryInfo) (model.UserOrdinaryInfo, error) {
+	var user model.UserOrdinaryInfo
 	fmt.Println("Getting user by ID")
 	err := r.db.QueryRow("SELECT id,login, password FROM customer WHERE login =$1", input.Login).Scan(&user.Id, &user.Login, &user.Password)
 	if err != nil {
@@ -31,9 +31,9 @@ func (r *userRepo) GetUserById(input model.User) (model.User, error) {
 	return user, nil
 }
 
-func (r *userRepo) CreateUser(input model.User) (model.User, error) {
+func (r *userRepo) CreateUser(input model.UserOrdinaryInfo) (model.UserOrdinaryInfo, error) {
 
-	var customer model.User
+	var customer model.UserOrdinaryInfo
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), 12)
 	if err != nil {
 		fmt.Println("cant hash password")
@@ -54,8 +54,9 @@ func (r *userRepo) CreateUser(input model.User) (model.User, error) {
 	return customer, nil
 }
 
-func (r *userRepo) UserAuth(input model.User) (model.User, error) {
+func (r *userRepo) UserAuth(input model.UserOrdinaryInfo) (model.UserOrdinaryInfo, error) {
 	fmt.Println("user authentication")
+	fmt.Println(input)
 	user, err := r.GetUserById(input)
 	if err != nil {
 		fmt.Println("user not found")
@@ -84,10 +85,10 @@ func (r *userRepo) FetchProfile(id string) (model.UserSummary, error) {
 		defer wg.Done()
 		data, err := r.FetchProfileInfo(id)
 
-		profileCh <- data{
-			kind: "profile_info",
-			data: data,
-			err:  err,
+		profileCh <- model.UserMerge{
+			Kind:  "profile_info",
+			Data:  data,
+			Error: err,
 		}
 	}()
 
@@ -95,10 +96,10 @@ func (r *userRepo) FetchProfile(id string) (model.UserSummary, error) {
 		defer wg.Done()
 		data, err := r.FetchProfilePersonalInfo(id)
 
-		profileCh <- data{
-			kind: "personal_info",
-			data: data,
-			err:  err,
+		profileCh <- model.UserMerge{
+			Kind:  "personal_info",
+			Data:  data,
+			Error: err,
 		}
 	}()
 
@@ -106,12 +107,12 @@ func (r *userRepo) FetchProfile(id string) (model.UserSummary, error) {
 		defer wg.Done()
 		data, err := r.FetchProfileDeliveryInfo(id)
 
-		profileCh <- data{
-			kind: "delivery_info",
-			data: data,
-			err:  err,
+		profileCh <- model.UserMerge{
+			Kind:  "delivery_info",
+			Data:  data,
+			Error: err,
 		}
-	}
+	}()
 
 	go func() {
 		wg.Wait()
@@ -119,23 +120,23 @@ func (r *userRepo) FetchProfile(id string) (model.UserSummary, error) {
 	}()
 
 	for result := range profileCh {
-		if result.err != nil {
-			return nil, err
+		if result.Error != nil {
+			return user, result.Error
 		}
 
-		switch result.kind {
+		switch result.Kind {
 		case "profile_info":
-			if data, ok := result.data.(model.UserOrdinaryInfo); ok {
+			if data, ok := result.Data.(model.UserOrdinaryInfoOut); ok {
 				user.UserOrdinary = &data
 			}
 
 		case "personal_info":
-			if data, ok := result.data.(model.UserPersonalInfo); ok {
+			if data, ok := result.Data.(model.UserPersonalInfoOut); ok {
 				user.UserPersonal = &data
 			}
 
 		case "delivery_info":
-			if data, ok := result.data.(model.UserDeliveryInfo); ok {
+			if data, ok := result.Data.(model.UserDeliveryInfoOut); ok {
 				user.UserDelivery = &data
 			}
 		}
@@ -144,31 +145,34 @@ func (r *userRepo) FetchProfile(id string) (model.UserSummary, error) {
 	return user, nil
 }
 
-func (r *userRepo) FetchProfileInfo(id string) (model.User, error) {
-	err := r.db.QueryRow("SELECT id,login,email,user_role from customer WHERE id =$1", id).Scan(&user.Id, &user.Login, &user.Email, &user.UserRole)
+func (r *userRepo) FetchProfileInfo(id string) (model.UserOrdinaryInfoOut, error) {
+	var profileInfo model.UserOrdinaryInfoOut
+	err := r.db.QueryRow("SELECT id,login,email,user_role from customer WHERE id =$1", id).Scan(&profileInfo.Id, &profileInfo.Login, &profileInfo.Email, &profileInfo.UserRole)
 	if err != nil {
 		fmt.Println("user doesnt found")
-		return user, err
+		return profileInfo, err
 	}
-	return user, nil
+	return profileInfo, nil
 }
 
-func (r *userRepo) FetchProfilePersonalInfo(id string) (model.UserPersonalInfo, error) {
-	err := r.db.QueryRow("SELECT id,company, first_name, second_name from customer_personal_info WHERE id=$1", id).Scan(&userInfo.Id, &userInfo.Company, &userInfo.FirstName, &userInfo.SecondName)
+func (r *userRepo) FetchProfilePersonalInfo(id string) (model.UserPersonalInfoOut, error) {
+	var profilePersonalInfo model.UserPersonalInfoOut
+	err := r.db.QueryRow("SELECT id,company, first_name, second_name from customer_personal_info WHERE id=$1", id).Scan(&profilePersonalInfo.Id, &profilePersonalInfo.Company, &profilePersonalInfo.FirstName, &profilePersonalInfo.SecondName)
 	if err != nil {
 		fmt.Println("user doesnt found")
-		return userInfo, nil
+		return profilePersonalInfo, nil
 	}
-	return userInfo, err
+	return profilePersonalInfo, err
 }
 
-func (r *userRepo) FetchProfileDeliveryInfo(id string) (model.UserDeliveryInfo, error) {
-	err := r.db.QueryRow("SELECT id,phone_number, city, address from customer_delivery_info WHERE id = $1", id).Scan(&userInfo.Id, &userInfo.PhoneNumber, &userInfo.City, &userInfo.Address)
+func (r *userRepo) FetchProfileDeliveryInfo(id string) (model.UserDeliveryInfoOut, error) {
+	var profileDeliveryInfo model.UserDeliveryInfoOut
+	err := r.db.QueryRow("SELECT id,phone_number, city, address from customer_delivery_info WHERE id = $1", id).Scan(&profileDeliveryInfo.Id, &profileDeliveryInfo.PhoneNumber, &profileDeliveryInfo.City, &profileDeliveryInfo.Address)
 	if err != nil {
 		fmt.Println("user doesnt found for delivery info")
-		return userInfo, nil
+		return profileDeliveryInfo, nil
 	}
-	return userInfo, nil
+	return profileDeliveryInfo, nil
 }
 
 func (r *userRepo) RecordPersonalInfo(input model.UserPersonalInfo) (model.UserPersonalInfo, error) {
@@ -246,8 +250,8 @@ func (r *userRepo) UserPasswordChange(input model.PasswordChange) (model.Passwor
 	return check, nil
 }
 
-func (r *userRepo) UserChangeEmail(input model.User) (model.User, error) {
-	var user model.User
+func (r *userRepo) UserChangeEmail(input model.UserOrdinaryInfo) (model.UserOrdinaryInfo, error) {
+	var user model.UserOrdinaryInfo
 	var loginExists bool
 	err := r.db.QueryRow("SELECT EXISTS (SELECT 1 FROM customer WHERE login =$1)", input.Login).Scan(&loginExists)
 	if err != nil {
@@ -266,9 +270,9 @@ func (r *userRepo) UserChangeEmail(input model.User) (model.User, error) {
 	return user, nil
 }
 
-func (r *userRepo) GetAllUsers() ([]model.User, error) {
+func (r *userRepo) GetAllUsers() ([]model.UserOrdinaryInfo, error) {
 	fmt.Println("Getting all users")
-	var users []model.User
+	var users []model.UserOrdinaryInfo
 	rows, err := r.db.Query("SELECT id,login,password,email, registration_date,user_role FROM customer")
 	if err != nil {
 		fmt.Println(err)
@@ -276,7 +280,7 @@ func (r *userRepo) GetAllUsers() ([]model.User, error) {
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var user model.User
+		var user model.UserOrdinaryInfo
 		err = rows.Scan(&user.Id, &user.Login, &user.Password, &user.Email, &user.RegistrationDate, &user.UserRole)
 		if err != nil {
 			return users, err
