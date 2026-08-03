@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	"sync"
 
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/usecase"
@@ -81,17 +82,76 @@ func (h *UserService) GetUserProfile(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusUnauthorized, "invalid user id format")
 		return
 	}
-	userId, err := h.useCase.FetchProfile(idStr)
-	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "id doesnt find")
-		return
+	var user model.UserSummary
+
+	profileCh := make(chan model.UserMerge)
+
+	wg := new(sync.WaitGroup)
+
+	wg.Add(3)
+
+	go func() {
+		defer wg.Done()
+		data, err := h.useCase.FetchProfileInfo(idStr)
+
+		profileCh <- model.UserMerge{
+			Kind:  "profile_info",
+			Data:  data,
+			Error: err,
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		data, err := h.useCase.FetchProfilePersonalInfo(idStr)
+
+		profileCh <- model.UserMerge{
+			Kind:  "personal_info",
+			Data:  data,
+			Error: err,
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		data, err := h.useCase.FetchProfileDeliveryInfo(idStr)
+
+		profileCh <- model.UserMerge{
+			Kind:  "delivery_info",
+			Data:  data,
+			Error: err,
+		}
+	}()
+
+	go func() {
+		wg.Wait()
+		close(profileCh)
+	}()
+
+	for result := range profileCh {
+		if result.Error != nil {
+			respondWithError(w, http.StatusBadRequest, "invalid data")
+		}
+
+		switch result.Kind {
+		case "profile_info":
+			if data, ok := result.Data.(model.UserOrdinaryInfoOut); ok {
+				user.UserOrdinary = &data
+			}
+
+		case "personal_info":
+			if data, ok := result.Data.(model.UserPersonalInfoOut); ok {
+				user.UserPersonal = &data
+			}
+
+		case "delivery_info":
+			if data, ok := result.Data.(model.UserDeliveryInfoOut); ok {
+				user.UserDelivery = &data
+			}
+		}
 	}
 
-	/*userInfo, _ := h.useCase.UserPersonalInfo(idStr)
-	userDelivery, _ := h.useCase.UserDeliveryInfo(idStr)*/
-
-	respondWithJSON(w, http.StatusOK, userId)
-
+	respondWithJSON(w, http.StatusOK, user)
 }
 
 func (h *UserService) InsertPersonalInfo(w http.ResponseWriter, r *http.Request) {
