@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 )
 
@@ -12,33 +13,33 @@ func NewItemUseCase(r model.ItemRepository) *ItemUseCase {
 	return &ItemUseCase{repo: r}
 }
 
-func (i *ItemUseCase) CreateItem(input model.Item, documents model.ItemSpecFiles) (model.Item, model.ItemSpecFiles, error) {
-	return i.repo.CreateItem(input, documents)
+func (i *ItemUseCase) CreateItem(ctx context.Context, input model.Item, documents model.ItemSpecFiles) (model.Item, model.ItemSpecFiles, error) {
+	return i.repo.CreateItem(ctx, input, documents)
 }
 
-func (i *ItemUseCase) GetItemById(id int) (model.ItemProp, error) {
-	return i.repo.GetItemById(id)
+func (i *ItemUseCase) GetItemById(ctx context.Context, id int) (model.ItemProp, error) {
+	return i.repo.GetItemById(ctx, id)
 }
 
-func (i *ItemUseCase) GetSpecById(id int) ([]model.ItemSpecFiles, error) {
-	return i.repo.GetSpecById(id)
+func (i *ItemUseCase) GetSpecById(ctx context.Context, id int) ([]model.ItemSpecFiles, error) {
+	return i.repo.GetSpecById(ctx, id)
 }
-func (i *ItemUseCase) GetItemId(input model.Item) (model.Item, error) {
-	return i.repo.GetItemId(input)
+func (i *ItemUseCase) GetItemId(ctx context.Context, input model.Item) (model.Item, error) {
+	return i.repo.GetItemId(ctx, input)
 }
-func (i *ItemUseCase) DeleteItem(input model.Item) (model.Item, error) {
-	return i.repo.DeleteItem(input)
+func (i *ItemUseCase) DeleteItem(ctx context.Context, input model.Item) (model.Item, error) {
+	return i.repo.DeleteItem(ctx, input)
 }
-func (i *ItemUseCase) GetAllItems() ([]model.Item, error) {
-	return i.repo.GetAllItems()
+func (i *ItemUseCase) GetAllItems(ctx context.Context) ([]model.Item, error) {
+	return i.repo.GetAllItems(ctx)
 }
-func (i *ItemUseCase) ChangeVisible(input bool, id string) (model.Item, error) {
-	return i.repo.ChangeVisible(input, id)
+func (i *ItemUseCase) ChangeVisible(ctx context.Context, input bool, id string) (model.Item, error) {
+	return i.repo.ChangeVisible(ctx, input, id)
 }
-func (i *ItemUseCase) GetAllPropsName() (model.ItemProp, error) {
-	return i.repo.GetAllPropsName()
+func (i *ItemUseCase) GetAllPropsName(ctx context.Context) (model.ItemProp, error) {
+	return i.repo.GetAllPropsName(ctx)
 }
 
-func (i *ItemUseCase) SetPropsForItem(input []model.ItemProp, id string) ([]model.ItemProp, error) {
-	return i.repo.SetPropsForItem(input, id)
+func (i *ItemUseCase) SetPropsForItem(ctx context.Context, input []model.ItemProp, id string) ([]model.ItemProp, error) {
+	return i.repo.SetPropsForItem(ctx, input, id)
 }

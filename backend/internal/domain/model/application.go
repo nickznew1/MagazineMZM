@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type Application struct {
 	Id          int       `json:"id"`
@@ -19,10 +22,10 @@ type Application struct {
 }
 
 type ApplicationRepository interface {
-	GetAllApplicationsForUser(userId string) ([]Application, error)
-	GetApplication(id string, userId string) (Application, error)
-	CreateApplication(input Application) (string, error)
-	GetAllApplicationsForAdmin() ([]Application, error)
-	SetNewApplicationStatus(input Application) (Application, error)
-	GetApplicationForAdmin(id string) (Application, error)
+	GetAllApplicationsForUser(ctx context.Context, userId string) ([]Application, error)
+	GetApplication(ctx context.Context, id string, userId string) (Application, error)
+	CreateApplication(ctx context.Context, input Application) (string, error)
+	GetAllApplicationsForAdmin(ctx context.Context) ([]Application, error)
+	SetNewApplicationStatus(ctx context.Context, input Application) (Application, error)
+	GetApplicationForAdmin(ctx context.Context, id string) (Application, error)
 }

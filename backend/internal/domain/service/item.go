@@ -93,7 +93,7 @@ func (h *ItemService) CreateItem(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("CreateItem")
 
-	newItem, _, err := h.useCase.CreateItem(input, documents)
+	newItem, _, err := h.useCase.CreateItem(r.Context(), input, documents)
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, "oshibka")
 		return
@@ -108,7 +108,7 @@ func (h *ItemService) GetItemById(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusBadRequest, "cant parse query to int")
 		return
 	}
-	itemId, err := h.useCase.GetItemById(queryItem)
+	itemId, err := h.useCase.GetItemById(r.Context(), queryItem)
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "id doesnt find")
 		return
@@ -124,7 +124,7 @@ func (h *ItemService) GetItemSpecById(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusBadRequest, "cant parse query to int")
 		return
 	}
-	specId, err := h.useCase.GetSpecById(specQuery)
+	specId, err := h.useCase.GetSpecById(r.Context(), specQuery)
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "id doesnt find")
 		return
@@ -138,7 +138,7 @@ func (h *ItemService) GetItemId(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusBadRequest, "error111")
 		return
 	}
-	itemId, err := h.useCase.GetItemId(input)
+	itemId, err := h.useCase.GetItemId(r.Context(), input)
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "oshibka")
 		return
@@ -154,7 +154,7 @@ func (h *ItemService) DeleteItem(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusBadRequest, "error")
 		return
 	}
-	deleteItem, err := h.useCase.DeleteItem(input)
+	deleteItem, err := h.useCase.DeleteItem(r.Context(), input)
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, "oshibka")
 		return
@@ -163,7 +163,7 @@ func (h *ItemService) DeleteItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ItemService) GetAllItems(w http.ResponseWriter, r *http.Request) {
-	items, err := h.useCase.GetAllItems()
+	items, err := h.useCase.GetAllItems(r.Context())
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "error getting all items")
 		return
@@ -178,7 +178,7 @@ func (h *ItemService) ChangeVisible(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusBadRequest, "error")
 		return
 	}
-	visible, err := h.useCase.ChangeVisible(input.Visible, idStr)
+	visible, err := h.useCase.ChangeVisible(r.Context(), input.Visible, idStr)
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "oshibka")
 		return
@@ -189,7 +189,7 @@ func (h *ItemService) ChangeVisible(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ItemService) GetAllPropsName(w http.ResponseWriter, r *http.Request) {
-	props, err := h.useCase.GetAllPropsName()
+	props, err := h.useCase.GetAllPropsName(r.Context())
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "error getting all props")
 		return
@@ -205,7 +205,7 @@ func (h *ItemService) SetNewProps(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusBadRequest, "error")
 		return
 	}
-	newProps, err := h.useCase.SetPropsForItem(input, idStr)
+	newProps, err := h.useCase.SetPropsForItem(r.Context(), input, idStr)
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "error")
 		return

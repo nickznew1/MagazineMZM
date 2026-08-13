@@ -1,24 +1,25 @@
 package repository
 
 import (
-	"database/sql"
+	"context"
 	"encoding/json"
 	"fmt"
-	"time"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
+	"time"
 )
 
 type ApplicationRepo struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
-func NewApplicationRepo(db *sql.DB) model.ApplicationRepository {
+func NewApplicationRepo(db *pgxpool.Pool) model.ApplicationRepository {
 	return &ApplicationRepo{
 		db: db}
 }
 
-func (s *ApplicationRepo) CreateApplication(input model.Application) (string, error) {
+func (s *ApplicationRepo) CreateApplication(ctx context.Context, input model.Application) (string, error) {
 	fmt.Println("create application")
 	var applicationId string
 	date := time.Now()
@@ -27,7 +28,7 @@ func (s *ApplicationRepo) CreateApplication(input model.Application) (string, er
 		return "", err
 	}
 
-	err = s.db.QueryRow(`INSERT INTO 
+	err = s.db.QueryRow(ctx, `INSERT INTO 
     user_applications(user_id, email, first_name, second_name, login, phone_number, company, address, city, order_date, items) 
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
     RETURNING id`,
@@ -50,13 +51,13 @@ func (s *ApplicationRepo) CreateApplication(input model.Application) (string, er
 	return applicationId, nil
 }
 
-func (s *ApplicationRepo) GetApplication(id string, userId string) (model.Application, error) {
+func (s *ApplicationRepo) GetApplication(ctx context.Context, id string, userId string) (model.Application, error) {
 	fmt.Println("get application")
 	var application model.Application
 	var temp string
 	var selectedItems []byte
 	var resultItems []model.Cart
-	err := s.db.QueryRow(`SELECT * 
+	err := s.db.QueryRow(ctx, `SELECT * 
     from user_applications WHERE id=$1 AND user_id =$2`,
 		id, userId).Scan(
 		&temp,
@@ -82,7 +83,7 @@ func (s *ApplicationRepo) GetApplication(id string, userId string) (model.Applic
 		fmt.Println("cant unmarshal items")
 		return application, err
 	}
-	_, err = s.db.Exec("DELETE FROM customer_item WHERE customer_id = $1", userId)
+	_, err = s.db.Exec(ctx, "DELETE FROM customer_item WHERE customer_id = $1", userId)
 	if err != nil {
 		fmt.Println(err)
 		return application, nil
@@ -91,12 +92,12 @@ func (s *ApplicationRepo) GetApplication(id string, userId string) (model.Applic
 	return application, nil
 }
 
-func (s *ApplicationRepo) GetAllApplicationsForUser(userId string) ([]model.Application, error) {
+func (s *ApplicationRepo) GetAllApplicationsForUser(ctx context.Context, userId string) ([]model.Application, error) {
 	fmt.Println("get applications")
 	var applications []model.Application
 	var allItems []byte
 	var resultItems []model.Cart
-	rows, err := s.db.Query(`SELECT *  
+	rows, err := s.db.Query(ctx, `SELECT *  
     from user_applications WHERE user_id =$1`, userId)
 	if err != nil {
 		fmt.Println(err)
@@ -135,11 +136,11 @@ func (s *ApplicationRepo) GetAllApplicationsForUser(userId string) ([]model.Appl
 	return applications, nil
 }
 
-func (s *ApplicationRepo) GetAllApplicationsForAdmin() ([]model.Application, error) {
+func (s *ApplicationRepo) GetAllApplicationsForAdmin(ctx context.Context) ([]model.Application, error) {
 	var applications []model.Application
 	var allItems []byte
 	var resultItems []model.Cart
-	rows, err := s.db.Query(`SELECT *  
+	rows, err := s.db.Query(ctx, `SELECT *  
     from user_applications ORDER BY id`)
 	if err != nil {
 		fmt.Println(err)
@@ -178,10 +179,10 @@ func (s *ApplicationRepo) GetAllApplicationsForAdmin() ([]model.Application, err
 	return applications, nil
 }
 
-func (s *ApplicationRepo) SetNewApplicationStatus(input model.Application) (model.Application, error) {
+func (s *ApplicationRepo) SetNewApplicationStatus(ctx context.Context, input model.Application) (model.Application, error) {
 	var application model.Application
 	fmt.Println(input, "ZDES")
-	err := s.db.QueryRow(`UPDATE user_applications SET order_status =$1 WHERE id = $2 RETURNING order_status`, input.Status, input.Id).Scan(&application.Status)
+	err := s.db.QueryRow(ctx, `UPDATE user_applications SET order_status =$1 WHERE id = $2 RETURNING order_status`, input.Status, input.Id).Scan(&application.Status)
 	if err != nil {
 		fmt.Println(err)
 		return application, err
@@ -189,12 +190,12 @@ func (s *ApplicationRepo) SetNewApplicationStatus(input model.Application) (mode
 	return application, nil
 }
 
-func (s *ApplicationRepo) GetApplicationForAdmin(id string) (model.Application, error) {
+func (s *ApplicationRepo) GetApplicationForAdmin(ctx context.Context, id string) (model.Application, error) {
 	fmt.Println("get application")
 	var application model.Application
 	var selectedItems []byte
 	var resultItems []model.Cart
-	err := s.db.QueryRow(`SELECT * 
+	err := s.db.QueryRow(ctx, `SELECT * 
     from user_applications WHERE id=$1`,
 		id).Scan(
 		&application.Id,

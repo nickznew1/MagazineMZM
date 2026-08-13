@@ -1,5 +1,7 @@
 package model
 
+import "context"
+
 type Cart struct {
 	Id                int            `json:"id"`
 	ItemSpecId        int            `json:"item_spec_id"`
@@ -16,9 +18,9 @@ type Cart struct {
 }
 
 type CartRepository interface {
-	AddItemToCart(input Cart) (Cart, error)
-	DeleteShopCart(input string) (Cart, error)
-	GetCart(id string) ([]Cart, error)
-	DeleteUserItem(input Cart) ([]Cart, error)
-	CalcUserItem(input Cart) (Cart, error)
+	AddItemToCart(ctx context.Context, input Cart) (Cart, error)
+	DeleteShopCart(ctx context.Context, input string) (Cart, error)
+	GetCart(ctx context.Context, id string) ([]Cart, error)
+	DeleteUserItem(ctx context.Context, input Cart) ([]Cart, error)
+	CalcUserItem(ctx context.Context, input Cart) (Cart, error)
 }

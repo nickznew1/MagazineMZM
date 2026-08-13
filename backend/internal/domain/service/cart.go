@@ -27,7 +27,7 @@ func (h *CartService) GetCart(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusForbidden, "invalid user id format")
 		return
 	}
-	userId, err := h.useCase.GetCart(idStr)
+	userId, err := h.useCase.GetCart(r.Context(), idStr)
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "id doesnt find")
 		return
@@ -43,7 +43,7 @@ func (h *CartService) CreateUserItem(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusBadRequest, "Неверные данные")
 		return
 	}
-	shopCart, err := h.useCase.AddItemToCart(input)
+	shopCart, err := h.useCase.AddItemToCart(r.Context(), input)
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "oshibka")
 		return
@@ -59,7 +59,7 @@ func (h *CartService) DeleteUserItem(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusBadRequest, "Неверные данные")
 		return
 	}
-	deleteItem, err := h.useCase.DeleteUserItem(input)
+	deleteItem, err := h.useCase.DeleteUserItem(r.Context(), input)
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "error when deleting item from cart")
 		return
@@ -75,7 +75,7 @@ func (h *CartService) CalcUserItem(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusBadRequest, "wrong body for counter")
 		return
 	}
-	calcItem, err := h.useCase.CalcUserItem(input)
+	calcItem, err := h.useCase.CalcUserItem(r.Context(), input)
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "error on server when try to count")
 		return

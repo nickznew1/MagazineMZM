@@ -260,7 +260,7 @@ func (h *UserService) UserEmailChange(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *UserService) GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	Users, err := h.useCase.GetAllUsers()
+	Users, err := h.useCase.GetAllUsers(r.Context())
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "oshibka")
 		return

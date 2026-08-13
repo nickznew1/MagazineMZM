@@ -3,17 +3,17 @@ package repository
 import (
 	"context"
 	"fmt"
-	"github.com/jackc/pgx/v5"
-	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type userRepo struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
-func NewUserRepo(db *sql.DB) model.UserRepository {
+func NewUserRepo(db *pgxpool.Pool) model.UserRepository {
 	return &userRepo{
 		db: db}
 }
@@ -55,7 +55,7 @@ func (r *userRepo) CreateUser(ctx context.Context, input model.UserOrdinaryInfo)
 func (r *userRepo) UserAuth(ctx context.Context, input model.UserOrdinaryInfo) (model.UserOrdinaryInfo, error) {
 	fmt.Println("user authentication")
 	fmt.Println(input)
-	user, err := r.GetUserById(input)
+	user, err := r.GetUserById(ctx, input)
 	if err != nil {
 		fmt.Println("user not found")
 		return user, err
@@ -85,9 +85,9 @@ func (r *userRepo) FetchProfilePersonalInfo(ctx context.Context, id string) (mod
 	err := r.db.QueryRow(ctx, "SELECT id,company, first_name, second_name from customer_personal_info WHERE id=$1", id).Scan(&profilePersonalInfo.Id, &profilePersonalInfo.Company, &profilePersonalInfo.FirstName, &profilePersonalInfo.SecondName)
 	if err != nil {
 		fmt.Println("user doesnt found")
-		return profilePersonalInfo, nil
+		return profilePersonalInfo, err
 	}
-	return profilePersonalInfo, err
+	return profilePersonalInfo, nil
 }
 
 func (r *userRepo) FetchProfileDeliveryInfo(ctx context.Context, id string) (model.UserDeliveryInfoOut, error) {
@@ -95,7 +95,7 @@ func (r *userRepo) FetchProfileDeliveryInfo(ctx context.Context, id string) (mod
 	err := r.db.QueryRow(ctx, "SELECT id,phone_number, city, address from customer_delivery_info WHERE id = $1", id).Scan(&profileDeliveryInfo.Id, &profileDeliveryInfo.PhoneNumber, &profileDeliveryInfo.City, &profileDeliveryInfo.Address)
 	if err != nil {
 		fmt.Println("user doesnt found for delivery info")
-		return profileDeliveryInfo, nil
+		return profileDeliveryInfo, err
 	}
 	return profileDeliveryInfo, nil
 }
