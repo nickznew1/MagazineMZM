@@ -24,7 +24,7 @@ func (h *ApplicationService) CreateApplication(w http.ResponseWriter, r *http.Re
 		RespondWithError(w, http.StatusBadRequest, "Неверные данные")
 		return
 	}
-	newApplication, err := h.useCase.CreateApplication(input)
+	newApplication, err := h.useCase.CreateApplication(r.Context(), input)
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "oshibka")
 		return
@@ -37,7 +37,7 @@ func (h *ApplicationService) CreateApplication(w http.ResponseWriter, r *http.Re
 func (h *ApplicationService) GetApplication(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	userIdJWT := r.Context().Value("user_id")
-	application, err := h.useCase.GetApplication(idStr, userIdJWT.(string))
+	application, err := h.useCase.GetApplication(r.Context(), idStr, userIdJWT.(string))
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "oshibka")
 		return
@@ -47,7 +47,7 @@ func (h *ApplicationService) GetApplication(w http.ResponseWriter, r *http.Reque
 
 func (h *ApplicationService) GetAllApplicationsForUser(w http.ResponseWriter, r *http.Request) {
 	userIdJWT := r.Context().Value("user_id")
-	applications, err := h.useCase.GetAllApplicationsForUser(userIdJWT.(string))
+	applications, err := h.useCase.GetAllApplicationsForUser(r.Context(), userIdJWT.(string))
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "oshibka")
 		return
@@ -56,7 +56,7 @@ func (h *ApplicationService) GetAllApplicationsForUser(w http.ResponseWriter, r 
 }
 
 func (h *ApplicationService) GetAllApplicationsForAdmin(w http.ResponseWriter, r *http.Request) {
-	applications, err := h.useCase.GetAllApplicationsForAdmin()
+	applications, err := h.useCase.GetAllApplicationsForAdmin(r.Context())
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "oshibka")
 		return
@@ -71,7 +71,7 @@ func (h *ApplicationService) SetApplicationStatus(w http.ResponseWriter, r *http
 		RespondWithError(w, http.StatusBadRequest, "Неверные данные")
 		return
 	}
-	newApplication, err := h.useCase.SetNewApplicationStatus(input)
+	newApplication, err := h.useCase.SetNewApplicationStatus(r.Context(), input)
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "oshibka")
 		return
@@ -83,7 +83,7 @@ func (h *ApplicationService) SetApplicationStatus(w http.ResponseWriter, r *http
 
 func (h *ApplicationService) GetApplicationForAdmin(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
-	itemId, err := h.useCase.GetApplicationForAdmin(idStr)
+	itemId, err := h.useCase.GetApplicationForAdmin(r.Context(), idStr)
 	if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, "id doesnt find")
 		return

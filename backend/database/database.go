@@ -1,18 +1,18 @@
 package database
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	"log"
 	"os"
 	"time"
-
-	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
 )
 
-func Connect() (*sql.DB, error) {
-	var db *sql.DB
+func Connect() (*pgxpool.Pool, error) {
+	var db *pgxpool.Pool
 
 	err := godotenv.Load()
 	if err != nil {
@@ -32,12 +32,13 @@ func Connect() (*sql.DB, error) {
 		dbHost, dbPort, dbUser, dbPass, dbName, dbSsl)
 
 	for i := 0; i < 10; i++ {
-		db, err = sql.Open("postgres", databaseUrl)
-		if err == nil && db.Ping() == nil {
+		db, err = pgxpool.New(context.Background(), databaseUrl)
+		if err == nil && db.Ping(context.Background()) == nil {
 			return db, nil
 		}
 		time.Sleep(time.Duration(i*2) * time.Second)
 	}
+	defer db.Close()
 	if err != nil {
 		log.Fatal("DB IS NOT RESPONDING")
 	}

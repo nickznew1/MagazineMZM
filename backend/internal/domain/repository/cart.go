@@ -1,27 +1,28 @@
 package repository
 
 import (
-	"database/sql"
+	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
 
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
+	"strconv"
 )
 
 type cartRepo struct {
-	db *sql.DB
+	db *pgxpool.Pool
 }
 
-func NewCartRepo(db *sql.DB) model.CartRepository {
+func NewCartRepo(db *pgxpool.Pool) model.CartRepository {
 	return &cartRepo{
 		db: db}
 }
 
-func (s *cartRepo) CalcUserItem(input model.Cart) (model.Cart, error) {
+func (s *cartRepo) CalcUserItem(ctx context.Context, input model.Cart) (model.Cart, error) {
 	var calc model.Cart
 
-	err := s.db.QueryRow(`UPDATE customer_item 
+	err := s.db.QueryRow(ctx, `UPDATE customer_item 
   SET count =$1 
   WHERE item_spec_id =$2 
   AND customer_id = $3 
@@ -35,16 +36,16 @@ func (s *cartRepo) CalcUserItem(input model.Cart) (model.Cart, error) {
 
 }
 
-func (s *cartRepo) DeleteUserItem(input model.Cart) ([]model.Cart, error) {
+func (s *cartRepo) DeleteUserItem(ctx context.Context, input model.Cart) ([]model.Cart, error) {
 	var cart []model.Cart
 	fmt.Println("delete UserItem id", input.ItemId, input.Id)
-	_, err := s.db.Exec("DELETE FROM customer_item WHERE item_spec_id = $1 AND customer_id = $2 ", input.ItemSpecId, input.Id)
+	_, err := s.db.Exec(ctx, "DELETE FROM customer_item WHERE item_spec_id = $1 AND customer_id = $2 ", input.ItemSpecId, input.Id)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("User/item doesn't founded")
 		return cart, err
 	}
-	newCart, err := s.GetCart(strconv.Itoa(input.Id))
+	newCart, err := s.GetCart(ctx, strconv.Itoa(input.Id))
 	if err != nil {
 		fmt.Println("cart empty")
 		fmt.Println(newCart)
@@ -53,12 +54,12 @@ func (s *cartRepo) DeleteUserItem(input model.Cart) ([]model.Cart, error) {
 	return newCart, err
 }
 
-func (s *cartRepo) AddItemToCart(input model.Cart) (model.Cart, error) {
+func (s *cartRepo) AddItemToCart(ctx context.Context, input model.Cart) (model.Cart, error) {
 	var userItem model.Cart
 	fmt.Println("Add item to cart for user")
 	fmt.Println("add new item")
 	propsJson, _ := json.Marshal(input.Props)
-	err := s.db.QueryRow(`
+	err := s.db.QueryRow(ctx, `
         INSERT INTO customer_item(customer_id, count, item_id, props) 
         VALUES($1, $2, $3, $4) 
         RETURNING customer_id, count, item_id
@@ -73,21 +74,21 @@ func (s *cartRepo) AddItemToCart(input model.Cart) (model.Cart, error) {
 	return userItem, nil
 }
 
-func (s *cartRepo) DeleteShopCart(input string) (model.Cart, error) {
+func (s *cartRepo) DeleteShopCart(ctx context.Context, input string) (model.Cart, error) {
 	var userItem model.Cart
 	fmt.Println("Deleting shopcart")
 	fmt.Println(input)
-	err := s.db.QueryRow("DELETE FROM customer_item WHERE login =$1", input)
+	err := s.db.QueryRow(ctx, "DELETE FROM customer_item WHERE login =$1", input)
 	if err != nil {
 		return userItem, nil
 	}
 	return userItem, nil
 }
 
-func (s *cartRepo) GetCart(id string) ([]model.Cart, error) {
+func (s *cartRepo) GetCart(ctx context.Context, id string) ([]model.Cart, error) {
 	var shoppingCart []model.Cart
 	fmt.Println("Creating shopping cart for user: ", id)
-	rows, err := s.db.Query(`SELECT
+	rows, err := s.db.Query(ctx, `SELECT
     item_id,
     count,
     customer_id, 

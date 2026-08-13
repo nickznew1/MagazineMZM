@@ -1,5 +1,7 @@
 package model
 
+import "context"
+
 type Item struct {
 	Id                   int      `json:"id"`
 	Name                 string   `json:"name"`
@@ -32,13 +34,13 @@ type ItemProp struct {
 }
 
 type ItemRepository interface {
-	CreateItem(input Item, documents ItemSpecFiles) (Item, ItemSpecFiles, error)
-	GetItemById(id int) (ItemProp, error)
-	GetSpecById(id int) ([]ItemSpecFiles, error)
-	GetItemId(input Item) (Item, error)
-	DeleteItem(input Item) (Item, error)
-	GetAllItems() ([]Item, error)
-	ChangeVisible(status bool, id string) (Item, error)
-	GetAllPropsName() (ItemProp, error)
-	SetPropsForItem(input []ItemProp, id string) ([]ItemProp, error)
+	CreateItem(ctx context.Context, input Item, documents ItemSpecFiles) (Item, ItemSpecFiles, error)
+	GetItemById(ctx context.Context, id int) (ItemProp, error)
+	GetSpecById(ctx context.Context, id int) ([]ItemSpecFiles, error)
+	GetItemId(ctx context.Context, input Item) (Item, error)
+	DeleteItem(ctx context.Context, input Item) (Item, error)
+	GetAllItems(ctx context.Context) ([]Item, error)
+	ChangeVisible(ctx context.Context, status bool, id string) (Item, error)
+	GetAllPropsName(ctx context.Context) (ItemProp, error)
+	SetPropsForItem(ctx context.Context, input []ItemProp, id string) ([]ItemProp, error)
 }

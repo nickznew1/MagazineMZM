@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"database/sql"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"log"
 
 	"github.com/go-chi/chi/v5"
@@ -16,7 +16,7 @@ import (
 	"github.com/go-chi/cors"
 )
 
-func Routes(sql *sql.DB) {
+func Routes(sql *pgxpool.Pool) {
 	r := chi.NewRouter()
 
 	frontendServerUrl := os.Getenv("FRONTEND_API_URL")
