@@ -24,15 +24,15 @@ func (h *CartService) GetCart(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("userIdJWT for cart ", userIdJWT)
 	idStr, ok := userIdJWT.(string)
 	if !ok {
-		respondWithError(w, http.StatusForbidden, "invalid user id format")
+		RespondWithError(w, http.StatusForbidden, "invalid user id format")
 		return
 	}
 	userId, err := h.useCase.GetCart(idStr)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "id doesnt find")
+		RespondWithError(w, http.StatusBadRequest, "id doesnt find")
 		return
 	}
-	respondWithJSON(w, http.StatusOK, userId)
+	RespondWithJSON(w, http.StatusOK, userId)
 }
 
 func (h *CartService) CreateUserItem(w http.ResponseWriter, r *http.Request) {
@@ -40,15 +40,15 @@ func (h *CartService) CreateUserItem(w http.ResponseWriter, r *http.Request) {
 	var input model.Cart
 	fmt.Println(input)
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Неверные данные")
+		RespondWithError(w, http.StatusBadRequest, "Неверные данные")
 		return
 	}
 	shopCart, err := h.useCase.AddItemToCart(input)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "oshibka")
+		RespondWithError(w, http.StatusBadRequest, "oshibka")
 		return
 	}
-	respondWithJSON(w, http.StatusCreated, shopCart)
+	RespondWithJSON(w, http.StatusCreated, shopCart)
 }
 
 func (h *CartService) DeleteUserItem(w http.ResponseWriter, r *http.Request) {
@@ -56,15 +56,15 @@ func (h *CartService) DeleteUserItem(w http.ResponseWriter, r *http.Request) {
 	var input model.Cart
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Неверные данные")
+		RespondWithError(w, http.StatusBadRequest, "Неверные данные")
 		return
 	}
 	deleteItem, err := h.useCase.DeleteUserItem(input)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "error when deleting item from cart")
+		RespondWithError(w, http.StatusBadRequest, "error when deleting item from cart")
 		return
 	}
-	respondWithJSON(w, http.StatusNoContent, deleteItem)
+	RespondWithJSON(w, http.StatusNoContent, deleteItem)
 }
 
 func (h *CartService) CalcUserItem(w http.ResponseWriter, r *http.Request) {
@@ -72,13 +72,13 @@ func (h *CartService) CalcUserItem(w http.ResponseWriter, r *http.Request) {
 	var input model.Cart
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		respondWithError(w, http.StatusBadRequest, "wrong body for counter")
+		RespondWithError(w, http.StatusBadRequest, "wrong body for counter")
 		return
 	}
 	calcItem, err := h.useCase.CalcUserItem(input)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "error on server when try to count")
+		RespondWithError(w, http.StatusBadRequest, "error on server when try to count")
 		return
 	}
-	respondWithJSON(w, http.StatusCreated, calcItem)
+	RespondWithJSON(w, http.StatusCreated, calcItem)
 }

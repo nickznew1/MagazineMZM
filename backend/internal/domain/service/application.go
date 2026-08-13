@@ -21,15 +21,15 @@ func (h *ApplicationService) CreateApplication(w http.ResponseWriter, r *http.Re
 	var input model.Application
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Неверные данные")
+		RespondWithError(w, http.StatusBadRequest, "Неверные данные")
 		return
 	}
 	newApplication, err := h.useCase.CreateApplication(input)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "oshibka")
+		RespondWithError(w, http.StatusBadRequest, "oshibka")
 		return
 	}
-	respondWithJSON(w, http.StatusCreated, map[string]interface{}{
+	RespondWithJSON(w, http.StatusCreated, map[string]interface{}{
 		"application_id": newApplication,
 	})
 }
@@ -39,44 +39,44 @@ func (h *ApplicationService) GetApplication(w http.ResponseWriter, r *http.Reque
 	userIdJWT := r.Context().Value("user_id")
 	application, err := h.useCase.GetApplication(idStr, userIdJWT.(string))
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "oshibka")
+		RespondWithError(w, http.StatusBadRequest, "oshibka")
 		return
 	}
-	respondWithJSON(w, http.StatusOK, application)
+	RespondWithJSON(w, http.StatusOK, application)
 }
 
 func (h *ApplicationService) GetAllApplicationsForUser(w http.ResponseWriter, r *http.Request) {
 	userIdJWT := r.Context().Value("user_id")
 	applications, err := h.useCase.GetAllApplicationsForUser(userIdJWT.(string))
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "oshibka")
+		RespondWithError(w, http.StatusBadRequest, "oshibka")
 		return
 	}
-	respondWithJSON(w, http.StatusOK, applications)
+	RespondWithJSON(w, http.StatusOK, applications)
 }
 
 func (h *ApplicationService) GetAllApplicationsForAdmin(w http.ResponseWriter, r *http.Request) {
 	applications, err := h.useCase.GetAllApplicationsForAdmin()
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "oshibka")
+		RespondWithError(w, http.StatusBadRequest, "oshibka")
 		return
 	}
-	respondWithJSON(w, http.StatusOK, applications)
+	RespondWithJSON(w, http.StatusOK, applications)
 }
 
 func (h *ApplicationService) SetApplicationStatus(w http.ResponseWriter, r *http.Request) {
 	var input model.Application
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Неверные данные")
+		RespondWithError(w, http.StatusBadRequest, "Неверные данные")
 		return
 	}
 	newApplication, err := h.useCase.SetNewApplicationStatus(input)
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "oshibka")
+		RespondWithError(w, http.StatusBadRequest, "oshibka")
 		return
 	}
-	respondWithJSON(w, http.StatusCreated, map[string]interface{}{
+	RespondWithJSON(w, http.StatusCreated, map[string]interface{}{
 		"application_status": newApplication,
 	})
 }

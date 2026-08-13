@@ -1,14 +1,9 @@
-package httpRespond
+package service
 
 import (
 	"encoding/json"
 	"net/http"
 )
-
-type Respond interface {
-	RespondWithJSON(w http.ResponseWriter, statusCode int, payload interface{})
-	RespondWithError(w http.ResponseWriter, statusCode int, message string)
-}
 
 func RespondWithJSON(w http.ResponseWriter, statusCode int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
