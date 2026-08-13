@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type UserOrdinaryInfo struct {
 	Id               int       `json:"id"`
@@ -65,17 +68,17 @@ type UserMerge struct {
 }
 
 type UserRepository interface {
-	GetUserById(input UserOrdinaryInfo) (UserOrdinaryInfo, error)
-	CreateUser(input UserOrdinaryInfo) (UserOrdinaryInfo, error)
-	UserAuth(input UserOrdinaryInfo) (UserOrdinaryInfo, error)
-	FetchProfileInfo(id string) (UserOrdinaryInfoOut, error)
-	FetchProfilePersonalInfo(id string) (UserPersonalInfoOut, error)
-	FetchProfileDeliveryInfo(id string) (UserDeliveryInfoOut, error)
-	RecordPersonalInfo(input UserPersonalInfo) (UserPersonalInfo, error)
-	UpdatePersonalInfo(input UserPersonalInfo) (UserPersonalInfo, error)
-	RecordDeliveryInfo(input UserDeliveryInfo) (UserDeliveryInfo, error)
-	UpdateDeliveryInfo(input UserDeliveryInfo) (UserDeliveryInfo, error)
-	UserPasswordChange(input PasswordChange) (PasswordChange, error)
-	UserChangeEmail(input UserOrdinaryInfo) (UserOrdinaryInfo, error)
-	GetAllUsers() ([]UserOrdinaryInfo, error)
+	GetUserById(ctx context.Context, input UserOrdinaryInfo) (UserOrdinaryInfo, error)
+	CreateUser(ctx context.Context, input UserOrdinaryInfo) (UserOrdinaryInfo, error)
+	UserAuth(ctx context.Context, input UserOrdinaryInfo) (UserOrdinaryInfo, error)
+	FetchProfileInfo(ctx context.Context, id string) (UserOrdinaryInfoOut, error)
+	FetchProfilePersonalInfo(ctx context.Context, id string) (UserPersonalInfoOut, error)
+	FetchProfileDeliveryInfo(ctx context.Context, id string) (UserDeliveryInfoOut, error)
+	RecordPersonalInfo(ctx context.Context, input UserPersonalInfo) (UserPersonalInfo, error)
+	UpdatePersonalInfo(ctx context.Context, input UserPersonalInfo) (UserPersonalInfo, error)
+	RecordDeliveryInfo(ctx context.Context, input UserDeliveryInfo) (UserDeliveryInfo, error)
+	UpdateDeliveryInfo(ctx context.Context, input UserDeliveryInfo) (UserDeliveryInfo, error)
+	UserPasswordChange(ctx context.Context, input PasswordChange) (PasswordChange, error)
+	UserChangeEmail(ctx context.Context, input UserOrdinaryInfo) (UserOrdinaryInfo, error)
+	GetAllUsers(ctx context.Context) ([]UserOrdinaryInfo, error)
 }
