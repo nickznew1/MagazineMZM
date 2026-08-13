@@ -1,5 +1,10 @@
 package httpRespond
 
+import (
+	"encoding/json"
+	"net/http"
+)
+
 type Respond interface {
 	RespondWithJSON(w http.ResponseWriter, statusCode int, payload interface{})
 	RespondWithError(w http.ResponseWriter, statusCode int, message string)
