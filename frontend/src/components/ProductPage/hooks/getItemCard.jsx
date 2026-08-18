@@ -6,7 +6,6 @@ export function GetItemCard(idUrl) {
     const [item, setItem] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
-
     useEffect(() => {
         const getItem = async () => {
             try {
