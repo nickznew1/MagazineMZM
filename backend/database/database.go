@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/lib/pq"
-	"github.com/nickznew1/MagazineMZM/config"
+	"github.com/nickznew1/MagazineMZM/backend/config"
 	"gopkg.in/yaml.v3"
 	"log"
 	"os"
