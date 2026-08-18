@@ -76,14 +76,13 @@ const CartItems = ({cart}) => {
         setIsDeleting(true)
         try {
             const info = {
-                item_spec_id:item.item_spec_id,
                 item_id: item.item_id,
                 id: item.id,
             }
             const response = await fetch(`${config.apiUrl}/cart/delete/`, {
-                method: 'DELETE',
+                method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify(info),
             })
@@ -92,7 +91,6 @@ const CartItems = ({cart}) => {
 
             if (response.ok) {
                 setCart(result);
-
             }
 
         } catch (error) {

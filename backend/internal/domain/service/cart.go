@@ -59,12 +59,12 @@ func (h *CartService) DeleteUserItem(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusBadRequest, "Неверные данные")
 		return
 	}
-	deleteItem, err := h.useCase.DeleteUserItem(r.Context(), input)
+	newCart, err := h.useCase.DeleteUserItem(r.Context(), input)
 	if err != nil {
 		RespondWithError(w, http.StatusBadRequest, "error when deleting item from cart")
 		return
 	}
-	RespondWithJSON(w, http.StatusNoContent, deleteItem)
+	RespondWithJSON(w, http.StatusOK, newCart)
 }
 
 func (h *CartService) CalcUserItem(w http.ResponseWriter, r *http.Request) {

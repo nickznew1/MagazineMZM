@@ -68,7 +68,7 @@ func Routes(sql *pgxpool.Pool, cfg *config.Config) {
 	})
 
 	r.Route("/", func(r chi.Router) {
-		r.Delete("/cart/delete/", cartService.DeleteUserItem)
+		r.Post("/cart/delete/", cartService.DeleteUserItem)
 		r.Post("/cart/add/", cartService.CreateUserItem)
 		r.Post("/cart/calc/", cartService.CalcUserItem)
 		r.Get("/", UserService.GetAllUsers)

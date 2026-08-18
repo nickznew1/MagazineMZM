@@ -24,10 +24,10 @@ func (s *cartRepo) CalcUserItem(ctx context.Context, input model.Cart) (model.Ca
 
 	err := s.db.QueryRow(ctx, `UPDATE customer_item 
   SET count =$1 
-  WHERE item_spec_id =$2 
+  WHERE item_id =$2 
   AND customer_id = $3 
-  RETURNING item_spec_id,count, customer_id`,
-		input.Count, input.ItemSpecId, input.Id).Scan(&calc.ItemSpecId, &calc.Count, &calc.Id)
+  RETURNING item_id,count, customer_id`,
+		input.Count, input.ItemId, input.Id).Scan(&calc.ItemSpecId, &calc.Count, &calc.Id)
 	if err != nil {
 		fmt.Println("item id doesnt founded")
 		return calc, err
@@ -39,7 +39,7 @@ func (s *cartRepo) CalcUserItem(ctx context.Context, input model.Cart) (model.Ca
 func (s *cartRepo) DeleteUserItem(ctx context.Context, input model.Cart) ([]model.Cart, error) {
 	var cart []model.Cart
 	fmt.Println("delete UserItem id", input.ItemId, input.Id)
-	_, err := s.db.Exec(ctx, "DELETE FROM customer_item WHERE item_spec_id = $1 AND customer_id = $2 ", input.ItemSpecId, input.Id)
+	_, err := s.db.Exec(ctx, "DELETE FROM customer_item WHERE item_id = $1 AND customer_id = $2 ", input.ItemId, input.Id)
 	if err != nil {
 		fmt.Println(err)
 		fmt.Println("User/item doesn't founded")
