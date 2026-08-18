@@ -29,7 +29,7 @@ type ClientCfg struct {
 	Url string `yaml:"api_url"`
 }
 
-func LoadConfig(path string) (Config, error) {
+func LoadConfig(path string) (*Config, error) {
 	var cfg Config
 
 	data, err := os.ReadFile(path)
@@ -41,5 +41,5 @@ func LoadConfig(path string) (Config, error) {
 		log.Fatal(err)
 	}
 
-	return cfg, err
+	return &cfg, err
 }

@@ -6,26 +6,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/lib/pq"
 	"github.com/nickznew1/MagazineMZM/backend/config"
-	"gopkg.in/yaml.v3"
 	"log"
-	"os"
-
 	"time"
 )
 
 func Connect(cfg *config.Config) (*pgxpool.Pool, error) {
 	var db *pgxpool.Pool
 
-	/*var cfg Config
-
-	data, err := os.ReadFile("config/config-example.yaml")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if err = yaml.Unmarshal(data, &cfg); err != nil {
-		log.Fatal(err)
-	}*/
+	var err error
 
 	databaseUrl := fmt.Sprintf(
 		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
@@ -36,7 +24,6 @@ func Connect(cfg *config.Config) (*pgxpool.Pool, error) {
 	for i := 0; i < 10; i++ {
 		db, err = pgxpool.New(context.Background(), databaseUrl)
 		if err == nil && db.Ping(context.Background()) == nil {
-			fmt.Println(err)
 			return db, nil
 		}
 		time.Sleep(time.Duration(i*2) * time.Second)

@@ -11,7 +11,7 @@ import (
 
 func main() {
 
-	cfg, err = config.Load("config/config-example.yaml")
+	cfg, err := config.LoadConfig("config/config-example.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}
