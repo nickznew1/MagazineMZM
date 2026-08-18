@@ -11,16 +11,17 @@ import (
 	"github.com/nickznew1/MagazineMZM/backend/internal/middleware"
 	"github.com/nickznew1/MagazineMZM/backend/pkg/auth"
 	"net/http"
-	"os"
+
+	"github.com/nickznew1/MagazineMZM/backend/config"
 
 	"github.com/go-chi/cors"
 )
 
-func Routes(sql *pgxpool.Pool) {
+func Routes(sql *pgxpool.Pool, cfg *config.Config) {
 	r := chi.NewRouter()
 
-	frontendServerUrl := os.Getenv("FRONTEND_API_URL")
-	serverPort := os.Getenv("SERVER_PORT")
+	frontendServerUrl := cfg.ClientConfig[0].Url
+	serverPort := cfg.ServerConfig[0].Port
 
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{frontendServerUrl},

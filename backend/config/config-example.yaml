@@ -1,0 +1,14 @@
+database:
+  - host: localhost
+    port: 5432
+    name: postgres
+    password: secret
+    user: root
+    ssl: disable
+
+
+server:
+  - port: :8080
+
+client:
+  - api_url: http://localhost:3000
