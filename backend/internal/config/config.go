@@ -7,6 +7,7 @@ import (
 )
 
 type Config struct {
+	Env          string        `yaml:"env"`
 	DbConfig     []DatabaseCfg `yaml:"database"`
 	ServerConfig []ServerCfg   `yaml:"server"`
 	ClientConfig []ClientCfg   `yaml:"client"`
@@ -29,17 +30,18 @@ type ClientCfg struct {
 	Url string `yaml:"api_url"`
 }
 
-func LoadConfig(path string) (*Config, error) {
+func MustLoad(path string) *Config {
 	var cfg Config
 
 	data, err := os.ReadFile(path)
+
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("File doesn't exist on %s path", path)
 	}
 
 	if err = yaml.Unmarshal(data, &cfg); err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error when try to parse config: %s", err)
 	}
 
-	return &cfg, err
+	return &cfg
 }
