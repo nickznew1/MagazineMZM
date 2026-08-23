@@ -25,6 +25,7 @@ func Routes(sql *pgxpool.Pool, cfg *config.Config, log *slog.Logger) {
 	serverPort := cfg.ServerConfig[0].Port
 	r.Use(middleware.RequestID)
 	r.Use(logger.HTTPLogger(log))
+	r.Use(middleware.Recoverer)
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{frontendServerUrl},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
@@ -34,14 +35,14 @@ func Routes(sql *pgxpool.Pool, cfg *config.Config, log *slog.Logger) {
 		MaxAge:           300,
 	}))
 
-	userRepo := repository.NewUserRepo(sql)
-	itemRepo := repository.NewItemRepo(sql)
+	userRepo := repository.NewUserRepo(sql, log)
+	itemRepo := repository.NewItemRepo(sql, log)
 	itemUseCase := usecase.NewItemUseCase(itemRepo)
 	itemService := service.NewItemService(itemUseCase)
-	cartRepo := repository.NewCartRepo(sql)
+	cartRepo := repository.NewCartRepo(sql, log)
 	cartUseCase := usecase.NewCartUseCase(cartRepo)
 	cartService := service.NewCartService(cartUseCase)
-	applicationRepo := repository.NewApplicationRepo(sql)
+	applicationRepo := repository.NewApplicationRepo(sql, log)
 	applicationUseCase := usecase.NewApplicationUseCase(applicationRepo)
 	applicationService := service.NewApplicationService(applicationUseCase)
 

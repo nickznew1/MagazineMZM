@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "github.com/lib/pq"
+	"github.com/lmittmann/tint"
 	"github.com/nickznew1/MagazineMZM/backend/internal/config"
 	"github.com/nickznew1/MagazineMZM/backend/internal/routes"
 	"github.com/nickznew1/MagazineMZM/backend/storage"
@@ -39,7 +40,7 @@ func setupLogger(env string) *slog.Logger {
 
 	switch env {
 	case "local":
-		logger = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+		logger = slog.New(tint.NewTextHandler(os.Stdout, &tint.Options{Level: slog.LevelDebug}))
 	case "dev":
 		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
 	case "prod":
