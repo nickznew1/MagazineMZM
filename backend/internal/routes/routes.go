@@ -1,6 +1,9 @@
 package routes
 
 import (
+	"log/slog"
+	"net/http"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -10,8 +13,6 @@ import (
 	"github.com/nickznew1/MagazineMZM/backend/internal/middleware/authMiddleware"
 	"github.com/nickznew1/MagazineMZM/backend/internal/middleware/logger"
 	"github.com/nickznew1/MagazineMZM/backend/pkg/auth"
-	"log/slog"
-	"net/http"
 
 	"github.com/nickznew1/MagazineMZM/backend/internal/config"
 
@@ -71,22 +72,18 @@ func Routes(sql *pgxpool.Pool, cfg *config.Config, log *slog.Logger) {
 	})
 
 	r.Route("/", func(r chi.Router) {
-
 		r.Route("/cart", func(r chi.Router) {
-
 			r.Post("/delete/", cartService.DeleteUserItem)
 			r.Post("/add/", cartService.CreateUserItem)
 			r.Post("/calc/", cartService.CalcUserItem)
 		})
 
 		r.Route("/auth", func(r chi.Router) {
-
 			r.Post("/", UserService.UserAuth)
 			r.Post("/registry", UserService.CreateUser)
 		})
 
 		r.Route("/profile", func(r chi.Router) {
-
 			r.Post("/personal", UserService.InsertPersonalInfo)
 			r.Post("/delivery", UserService.InsertDeliveryInfo)
 			r.Patch("/personal/up", UserService.UpdatePersonalInfo)
@@ -96,7 +93,6 @@ func Routes(sql *pgxpool.Pool, cfg *config.Config, log *slog.Logger) {
 		})
 
 		r.Route("/item", func(r chi.Router) {
-
 			r.Post("/create", itemService.CreateItem)
 			r.Get("/{id}", itemService.GetItemById)
 			r.Get("/spec/{id}", itemService.GetItemSpecById)
@@ -105,7 +101,6 @@ func Routes(sql *pgxpool.Pool, cfg *config.Config, log *slog.Logger) {
 		})
 
 		r.Route("/admin", func(r chi.Router) {
-
 			r.Get("/users", UserService.GetAllUsers)
 			r.Get("/applications", applicationService.GetAllApplicationsForAdmin)
 			r.Post("/status", applicationService.SetApplicationStatus)
