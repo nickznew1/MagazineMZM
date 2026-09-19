@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:14-alpine
-    container_name: postgres
+  magazine-app-postgres-db:
+    image: postgres:18.1-bookworm
+    container_name: magazine-app-postgres-db
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: secret
