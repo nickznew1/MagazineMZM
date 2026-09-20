@@ -25,8 +25,8 @@ func Routes(sql *pgxpool.Pool, cfg *config.Config, log *slog.Logger) {
 	frontendServerUrl := cfg.ClientConfig[0].Url
 	serverPort := cfg.ServerConfig[0].Port
 	r.Use(middleware.RequestID)
-	r.Use(logger.HTTPLogger(log))
-	r.Use(middleware.Recoverer)
+	r.Use(logger.HTTPLogger(log)
+	r.Use(middleware.Recoverer))
 	r.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{frontendServerUrl},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
@@ -101,14 +101,13 @@ func Routes(sql *pgxpool.Pool, cfg *config.Config, log *slog.Logger) {
 		})
 
 		r.Route("/admin", func(r chi.Router) {
-			r.Get("/users", UserService.GetAllUsers)
+			r.Get("/user", UserService.GetAllUsers)
 			r.Get("/applications", applicationService.GetAllApplicationsForAdmin)
 			r.Post("/status", applicationService.SetApplicationStatus)
 			r.Get("/application/{id}", applicationService.GetApplicationForAdmin)
 			r.Post("/visible/{id}", itemService.ChangeVisible)
 			r.Get("/props", itemService.GetAllPropsName)
 			r.Put("/newprops/{id}", itemService.SetNewProps)
-
 		})
 	})
 

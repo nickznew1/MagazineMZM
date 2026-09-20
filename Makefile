@@ -58,15 +58,14 @@ environment-port-forward:
 environment-port-close:
 	@docker compose down magazine-app-port-forwarder
 
-magazine-app-run:
+magazine-app-backend:
 	@export LOGGER_FOLDER=${PROJECT_ROOT}/backend/out/logs && \
 	export POSTGRES_HOST=localhost && \
-	go mod tidy && \
-	cd frontend && npm run build && \
-	go run backend/cmd/main.go
+	cd backend && go mod tidy && \
+	go run cmd/main.go
 
-
-
+magazine-app-frontend:
+	@cd frontend && npm run build && serve -s build
 
 
 

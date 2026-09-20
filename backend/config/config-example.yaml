@@ -6,9 +6,9 @@ env: local
 database:
   - host: localhost
     port: 5432
-    name: postgres
-    password: secret
-    user: root
+    name: test-psql-db
+    password: SuperSecretPassword
+    user: ADMIN_USER
     ssl: disable
 
 
