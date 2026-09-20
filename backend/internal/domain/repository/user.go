@@ -3,10 +3,11 @@ package repository
 import (
 	"context"
 
+	"log/slog"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 	"golang.org/x/crypto/bcrypt"
-	"log/slog"
 )
 
 type userRepo struct {
@@ -211,7 +212,7 @@ func (r *userRepo) GetAllUsers(ctx context.Context) ([]model.UserOrdinaryInfo, e
 	var users []model.UserOrdinaryInfo
 	rows, err := r.db.Query(ctx, "SELECT id,login,password,email, registration_date,user_role FROM customer")
 	if err != nil {
-		r.logger.Error("Repository: GetAllUsers (for admin) error when select all users from customer table", slog.Any("db_err: ", err))
+		r.logger.Error("Repository: GetAllUsers (for admin) error when select all user from customer table", slog.Any("db_err: ", err))
 		return users, err
 	}
 	defer rows.Close()
@@ -219,7 +220,7 @@ func (r *userRepo) GetAllUsers(ctx context.Context) ([]model.UserOrdinaryInfo, e
 		var user model.UserOrdinaryInfo
 		err = rows.Scan(&user.Id, &user.Login, &user.Password, &user.Email, &user.RegistrationDate, &user.UserRole)
 		if err != nil {
-			r.logger.Error("Repository: GetAllUsers (for admin) error when append all users to result slice", slog.Any("db_err: ", err))
+			r.logger.Error("Repository: GetAllUsers (for admin) error when append all user to result slice", slog.Any("db_err: ", err))
 			return users, err
 		}
 		users = append(users, user)

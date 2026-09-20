@@ -43,8 +43,8 @@ CREATE TABLE item
 
 CREATE TABLE item_spec_files
 (
-    id INT PRIMARY KEY,p
-       name TEXT NOT NULL,
+    id INT PRIMARY KEY,
+    name TEXT NOT NULL,
     link TEXT NOT NULL,
     picture TEXT NOT NULL,
     FOREIGN KEY (id) REFERENCES item(id) ON DELETE CASCADE

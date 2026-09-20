@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"log/slog"
 
+	"strconv"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
-	"strconv"
 )
 
 type cartRepo struct {
@@ -36,7 +37,6 @@ func (s *cartRepo) CalcUserItem(ctx context.Context, input model.Cart) (model.Ca
 	}
 	s.logger.Debug("Repository: CalcUserItem (increase/decrease item count in user cart) success", "input: ", input)
 	return calc, err
-
 }
 
 func (s *cartRepo) DeleteUserItem(ctx context.Context, input model.Cart) ([]model.Cart, error) {
