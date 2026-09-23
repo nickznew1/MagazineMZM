@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	core_postgres_pool "github.com/nickznew1/MagazineMZM/backend/internal/core/repository/postgres/pool"
+	core_middleware "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/middleware"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/repository"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/service"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/usecase"
@@ -21,7 +22,7 @@ import (
 func Routes(pool *core_postgres_pool.ConnectionPool, router chi.Router, log *slog.Logger) {
 
 	router.Use(middleware.RequestID)
-	router.Use(logger.HTTPLogger(log))
+	router.Use(core_middleware.LoggerMiddleware(log))
 	router.Use(middleware.Recoverer)
 	auth, err := auth.NewManager()
 	if err != nil {
