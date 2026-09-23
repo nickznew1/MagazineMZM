@@ -2,25 +2,41 @@ package users_transport_http
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
+	core_logger "github.com/nickznew1/MagazineMZM/backend/internal/core/logger"
+	core_http_response "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/response"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 )
 
-func (h *UsersHTTPHandler) InsertPersonalInfo(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("first insert for userInfo")
+func (h *UsersHTTPHandler) InsertPersonalInfo(
+	rw http.ResponseWriter,
+	r *http.Request) {
+
+	ctx := r.Context()
+
+	logger := core_logger.FromContext(ctx)
+
+	responseHandler := core_http_response.NewHTTPResponseHandler(logger, rw)
+
 	var input model.UserPersonalInfo
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		RespondWithError(w, http.StatusBadRequest, "Wrong info for user")
+		responseHandler.ErrorResponse(
+			err,
+			"error when decode request body")
 		return
 	}
-	fmt.Println(input)
-	newInfo, err := h.useCase.RecordPersonalInfo(r.Context(), input)
+
+	// NEED TO RENAME METHOD //
+	response, err := h.usersService.RecordPersonalInfo(r.Context(), input)
+	// NEED TO RENAME METHOD //
+
 	if err != nil {
-		RespondWithError(w, http.StatusBadRequest, "error when record new info for user")
+		responseHandler.ErrorResponse(
+			err,
+			"error when insert personal info")
 		return
 	}
-	RespondWithJSON(w, http.StatusCreated, newInfo)
+	responseHandler.ResponseWithJSON(http.StatusOK, response)
 }

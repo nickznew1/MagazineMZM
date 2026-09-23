@@ -7,7 +7,9 @@ import (
 	core_http_response "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/response"
 )
 
-func (h *UsersHTTPHandler) GetUserById(rw http.ResponseWriter, r *http.Request) {
+func (h *UsersHTTPHandler) GetUserById(
+	rw http.ResponseWriter,
+	r *http.Request) {
 
 	ctx := r.Context()
 

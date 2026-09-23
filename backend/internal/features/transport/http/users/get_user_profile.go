@@ -1,20 +1,31 @@
 package users_transport_http
 
 import (
-	"fmt"
 	"net/http"
 	"sync"
 
+	core_logger "github.com/nickznew1/MagazineMZM/backend/internal/core/logger"
+	core_http_response "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/response"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 )
 
-func (h *UsersHTTPHandler) GetUserProfile(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("getUserProfile")
-	userIdJWT := r.Context().Value("user_id")
-	fmt.Println("userIdJWT ", userIdJWT)
+func (h *UsersHTTPHandler) GetUserProfile(
+	rw http.ResponseWriter,
+	r *http.Request) {
+
+	ctx := r.Context()
+
+	logger := core_logger.FromContext(ctx)
+
+	responseHandler := core_http_response.NewHTTPResponseHandler(logger, rw)
+
+	userIdJWT := ctx.Value("user_id")
+
 	idStr, ok := userIdJWT.(string)
 	if !ok {
-		RespondWithError(w, http.StatusUnauthorized, "invalid user id format")
+		//NEED TO FIX//
+		http.Error(rw, "invalid JWT token", http.StatusBadRequest)
+		//NEED TO FIX//
 		return
 	}
 	var user model.UserSummary
@@ -27,7 +38,7 @@ func (h *UsersHTTPHandler) GetUserProfile(w http.ResponseWriter, r *http.Request
 
 	go func() {
 		defer wg.Done()
-		data, err := h.useCase.FetchProfileInfo(r.Context(), idStr)
+		data, err := h.usersService.FetchProfileInfo(r.Context(), idStr)
 
 		profileCh <- model.UserMerge{
 			Kind:  "profile_info",
@@ -38,7 +49,7 @@ func (h *UsersHTTPHandler) GetUserProfile(w http.ResponseWriter, r *http.Request
 
 	go func() {
 		defer wg.Done()
-		data, err := h.useCase.FetchProfilePersonalInfo(r.Context(), idStr)
+		data, err := h.usersService.FetchProfilePersonalInfo(r.Context(), idStr)
 
 		profileCh <- model.UserMerge{
 			Kind:  "personal_info",
@@ -49,7 +60,7 @@ func (h *UsersHTTPHandler) GetUserProfile(w http.ResponseWriter, r *http.Request
 
 	go func() {
 		defer wg.Done()
-		data, err := h.useCase.FetchProfileDeliveryInfo(r.Context(), idStr)
+		data, err := h.usersService.FetchProfileDeliveryInfo(r.Context(), idStr)
 
 		profileCh <- model.UserMerge{
 			Kind:  "delivery_info",
@@ -65,7 +76,9 @@ func (h *UsersHTTPHandler) GetUserProfile(w http.ResponseWriter, r *http.Request
 
 	for result := range profileCh {
 		if result.Error != nil {
-			RespondWithError(w, http.StatusBadRequest, "invalid data")
+			responseHandler.ErrorResponse(
+				result.Error,
+				"error when trying to get info from profile channel(fan-in)")
 		}
 
 		switch result.Kind {
@@ -86,5 +99,5 @@ func (h *UsersHTTPHandler) GetUserProfile(w http.ResponseWriter, r *http.Request
 		}
 	}
 
-	RespondWithJSON(w, http.StatusOK, user)
+	responseHandler.ResponseWithJSON(http.StatusOK, user)
 }

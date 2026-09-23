@@ -2,23 +2,38 @@ package users_transport_http
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
+	core_logger "github.com/nickznew1/MagazineMZM/backend/internal/core/logger"
+	core_http_response "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/response"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 )
 
-func (h *UsersHTTPHandler) UserPasswordChange(w http.ResponseWriter, r *http.Request) {
+func (h *UsersHTTPHandler) UserPasswordChange(
+	rw http.ResponseWriter,
+	r *http.Request) {
+
 	var changes model.PasswordChange
+
+	ctx := r.Context()
+
+	logger := core_logger.FromContext(ctx)
+
+	responseHandler := core_http_response.NewHTTPResponseHandler(logger, rw)
+
 	if err := json.NewDecoder(r.Body).Decode(&changes); err != nil {
-		fmt.Println(changes)
-		RespondWithError(w, http.StatusBadRequest, "Неверные данные")
+		responseHandler.ErrorResponse(
+			err,
+			"error when decode request body")
 		return
 	}
-	newPassword, err := h.useCase.UserPasswordChange(r.Context(), changes)
+	response, err := h.usersService.UserPasswordChange(r.Context(), changes)
 	if err != nil {
-		RespondWithError(w, http.StatusBadRequest, "oshibka")
+		responseHandler.ErrorResponse(
+			err,
+			"error when change password for user")
 		return
 	}
-	RespondWithJSON(w, http.StatusCreated, newPassword)
+
+	responseHandler.ResponseWithJSON(http.StatusCreated, response)
 }

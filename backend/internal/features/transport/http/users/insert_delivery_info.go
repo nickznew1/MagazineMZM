@@ -2,23 +2,36 @@ package users_transport_http
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
+	core_logger "github.com/nickznew1/MagazineMZM/backend/internal/core/logger"
+	core_http_response "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/response"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 )
 
-func (h *UsersHTTPHandler) InsertDeliveryInfo(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("first insert for DeliveryInfo")
+func (h *UsersHTTPHandler) InsertDeliveryInfo(
+	rw http.ResponseWriter,
+	r *http.Request) {
+
+	ctx := r.Context()
+
+	logger := core_logger.FromContext(ctx)
+
+	responseHandler := core_http_response.NewHTTPResponseHandler(logger, rw)
+
 	var input model.UserDeliveryInfo
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		RespondWithError(w, http.StatusBadRequest, "delivery info wrong")
+		responseHandler.ErrorResponse(
+			err,
+			"error when decode body")
 		return
 	}
-	userInfo, err := h.useCase.RecordDeliveryInfo(r.Context(), input)
+	response, err := h.usersService.RecordDeliveryInfo(r.Context(), input)
 	if err != nil {
-		RespondWithError(w, http.StatusBadRequest, "error when record delivery info")
+		responseHandler.ErrorResponse(
+			err,
+			"error when decode body")
 		return
 	}
-	RespondWithJSON(w, http.StatusCreated, userInfo)
+	responseHandler.ResponseWithJSON(http.StatusCreated, response)
 }
