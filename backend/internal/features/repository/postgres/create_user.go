@@ -11,7 +11,6 @@ import (
 func (r *UsersRepository) CreateUser(ctx context.Context, input model.UserOrdinaryInfo) (model.UserOrdinaryInfo, error) {
 	var customer model.UserOrdinaryInfo
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), 12)
-	r.logger.Debug("Repository: CreateUser started")
 	if err != nil {
 		r.logger.Error("Repository: CreateUser error - can't hash password(bcrypt)", slog.Any("bcrypt_err: ", err))
 		return customer, err

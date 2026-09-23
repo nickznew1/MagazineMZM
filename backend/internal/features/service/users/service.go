@@ -63,7 +63,8 @@ type UsersRepository interface {
 	) ([]model.UserOrdinaryInfo, error)
 }
 
-func (s *UsersService) NewUsersService(usersRepository UsersRepository,
+func NewUsersService(
+	usersRepository UsersRepository,
 ) *UsersService {
 
 	return &UsersService{
