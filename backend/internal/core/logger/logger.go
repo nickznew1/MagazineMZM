@@ -1,47 +1,34 @@
-package logger
+package core_logger
 
 import (
 	"context"
 	"log/slog"
-	"net/http"
-	"time"
+	"os"
 
-	"github.com/go-chi/chi/v5/middleware"
+	"github.com/lmittmann/tint"
 )
 
-func HTTPLogger(log *slog.Logger) func(next http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		log = log.With(
-			slog.String("component", "middleware/logger"),
-		)
+func SetupLogger(config Config) *slog.Logger {
+	var logger *slog.Logger
 
-		log.Info("logger middleware enabled")
-
-		fn := func(w http.ResponseWriter, r *http.Request) {
-			requestID := middleware.GetReqID(r.Context())
-			entry := log.With(
-				slog.String("method", r.Method),
-				slog.String("path", r.URL.Path),
-				slog.String("remote_addr", r.RemoteAddr),
-				slog.String("user_agent", r.UserAgent()),
-				slog.String("request_id", requestID),
-			)
-			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
-
-			ctx := context.WithValue(r.Context(), "log", entry)
-
-			t1 := time.Now()
-
-			defer func() {
-				entry.Info("request completed",
-					slog.Int("status", ww.Status()),
-					slog.Int("bytes", ww.BytesWritten()),
-					slog.String("duration", time.Since(t1).String()),
-				)
-			}()
-
-			next.ServeHTTP(ww, r.WithContext(ctx))
-		}
-		return http.HandlerFunc(fn)
+	switch config.Level {
+	case "local":
+		logger = slog.New(tint.NewTextHandler(os.Stdout, &tint.Options{Level: slog.LevelDebug}))
+	case "dev":
+		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+	case "prod":
+		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
 	}
+
+	return logger
+}
+
+func FromContext(ctx context.Context) *slog.Logger {
+	logger, ok := ctx.Value("log").(*slog.Logger)
+
+	if !ok {
+		panic("No logger in context")
+	}
+
+	return logger
 }

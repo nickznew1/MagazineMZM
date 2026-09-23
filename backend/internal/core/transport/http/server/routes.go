@@ -1,4 +1,4 @@
-package routes
+package core_transport_http_server
 
 import (
 	"log/slog"
@@ -6,37 +6,32 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/jackc/pgx/v5/pgxpool"
+	core_postgres_pool "github.com/nickznew1/MagazineMZM/backend/internal/core/repository/postgres/pool"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/repository"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/service"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/usecase"
+	users_repository_postgres "github.com/nickznew1/MagazineMZM/backend/internal/features/repository/postgres"
+	users_service "github.com/nickznew1/MagazineMZM/backend/internal/features/service/users"
+	users_transport_http "github.com/nickznew1/MagazineMZM/backend/internal/features/transport/http/users"
 	"github.com/nickznew1/MagazineMZM/backend/internal/middleware/authMiddleware"
 	"github.com/nickznew1/MagazineMZM/backend/internal/middleware/logger"
 	"github.com/nickznew1/MagazineMZM/backend/pkg/auth"
-
-	"github.com/nickznew1/MagazineMZM/backend/internal/config"
-
-	"github.com/go-chi/cors"
 )
 
-func Routes(sql *pgxpool.Pool, cfg *config.Config, log *slog.Logger) {
-	r := chi.NewRouter()
+func Routes(pool *core_postgres_pool.ConnectionPool, router chi.Router, log *slog.Logger) {
 
-	frontendServerUrl := cfg.ClientConfig[0].Url
-	serverPort := cfg.ServerConfig[0].Port
-	r.Use(middleware.RequestID)
-	r.Use(logger.HTTPLogger(log)
-	r.Use(middleware.Recoverer))
-	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{frontendServerUrl},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "multipart/form-data"},
-		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: true,
-		MaxAge:           300,
-	}))
+	router.Use(middleware.RequestID)
+	router.Use(logger.HTTPLogger(log))
+	router.Use(middleware.Recoverer)
+	auth, err := auth.NewManager()
+	if err != nil {
+		return
+	}
+	manager := authMiddleware.NewManager(auth)
 
-	userRepo := repository.NewUserRepo(sql, log)
+	usersRepository := users_repository_postgres.NewUsersRepository(pool.Pool)
+	usersService := users_service.NewUsersService(usersRepository)
+	usersTransport := users_transport_http.NewUsersHTTPHandler(usersService, auth)
 	itemRepo := repository.NewItemRepo(sql, log)
 	itemUseCase := usecase.NewItemUseCase(itemRepo)
 	itemService := service.NewItemService(itemUseCase)
@@ -47,31 +42,23 @@ func Routes(sql *pgxpool.Pool, cfg *config.Config, log *slog.Logger) {
 	applicationUseCase := usecase.NewApplicationUseCase(applicationRepo)
 	applicationService := service.NewApplicationService(applicationUseCase)
 
-	auth, err := auth.NewManager()
-	if err != nil {
-		return
-	}
-	manager := authMiddleware.NewManager(auth)
-
-	UserUseCase := usecase.NewUserUseCase(userRepo)
-	UserService := service.NewUserService(UserUseCase, auth)
 	ImageFs := http.FileServer(http.Dir("./public/images"))
-	r.Handle("/images/*", http.StripPrefix("/images/", ImageFs))
+	router.Handle("/images/*", http.StripPrefix("/images/", ImageFs))
 	PdfFs := http.FileServer(http.Dir("./public/documents"))
-	r.Handle("/documents/*", http.StripPrefix("/documents/", PdfFs))
+	router.Handle("/documents/*", http.StripPrefix("/documents/", PdfFs))
 
-	r.Group(func(r chi.Router) {
+	router.Group(func(r chi.Router) {
 		r.Use(manager.AuthMiddleware)
-		r.Get("/profile/", UserService.GetUserProfile)
-		r.Get("/user/", UserService.GetUser)
+		r.Get("/profile/", usersTransport.GetUserProfile)
+		r.Get("/user/", usersTransport.GetUserById)
 		r.Get("/cart/", cartService.GetCart)
-		r.Get("/checkout", UserService.GetCheckoutInfo)
+		r.Get("/checkout", usersTransport.GetCheckoutInfo)
 		r.Put("/applications", applicationService.CreateApplication)
 		r.Get("/checkout/complete/{id}", applicationService.GetApplication)
 		r.Get("/applications/all", applicationService.GetAllApplicationsForUser)
 	})
 
-	r.Route("/", func(r chi.Router) {
+	router.Route("/", func(r chi.Router) {
 		r.Route("/cart", func(r chi.Router) {
 			r.Post("/delete/", cartService.DeleteUserItem)
 			r.Post("/add/", cartService.CreateUserItem)
@@ -79,17 +66,17 @@ func Routes(sql *pgxpool.Pool, cfg *config.Config, log *slog.Logger) {
 		})
 
 		r.Route("/auth", func(r chi.Router) {
-			r.Post("/", UserService.UserAuth)
-			r.Post("/registry", UserService.CreateUser)
+			r.Post("/", usersTransport.UserAuth)
+			r.Post("/registry", usersTransport.CreateUser)
 		})
 
 		r.Route("/profile", func(r chi.Router) {
-			r.Post("/personal", UserService.InsertPersonalInfo)
-			r.Post("/delivery", UserService.InsertDeliveryInfo)
-			r.Patch("/personal/up", UserService.UpdatePersonalInfo)
-			r.Patch("/delivery/up", UserService.UpdateDeliveryInfo)
-			r.Patch("/", UserService.UserEmailChange)
-			r.Put("/changep", UserService.UserPasswordChange)
+			r.Post("/personal", usersTransport.InsertPersonalInfo)
+			r.Post("/delivery", usersTransport.InsertDeliveryInfo)
+			r.Patch("/personal/up", usersTransport.UpdatePersonalInfo)
+			r.Patch("/delivery/up", usersTransport.UpdateDeliveryInfo)
+			r.Patch("/", usersTransport.UserEmailChange)
+			r.Put("/changep", usersTransport.UserPasswordChange)
 		})
 
 		r.Route("/item", func(r chi.Router) {
@@ -101,7 +88,7 @@ func Routes(sql *pgxpool.Pool, cfg *config.Config, log *slog.Logger) {
 		})
 
 		r.Route("/admin", func(r chi.Router) {
-			r.Get("/user", UserService.GetAllUsers)
+			r.Get("/user", usersTransport.GetAllUsers)
 			r.Get("/applications", applicationService.GetAllApplicationsForAdmin)
 			r.Post("/status", applicationService.SetApplicationStatus)
 			r.Get("/application/{id}", applicationService.GetApplicationForAdmin)
@@ -111,8 +98,4 @@ func Routes(sql *pgxpool.Pool, cfg *config.Config, log *slog.Logger) {
 		})
 	})
 
-	err = http.ListenAndServe(serverPort, r)
-	if err != nil {
-		log.Error("Error when creating backend server on env.port", slog.Any("error", err))
-	}
 }

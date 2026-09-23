@@ -6,15 +6,24 @@ import (
 	"net/http"
 	"strconv"
 
+	core_logger "github.com/nickznew1/MagazineMZM/backend/internal/core/logger"
+	core_http_response "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/response"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 )
 
-func (h *UsersHTTPHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("CreateUser")
+func (h *UsersHTTPHandler) CreateUser(
+	rw http.ResponseWriter,
+	r *http.Request) {
 	var input model.UserOrdinaryInfo
+
+	ctx := r.Context()
+
+	logger := core_logger.FromContext(ctx)
+
+	responseHandler := core_http_response.NewHTTPResponseHandler(logger, rw)
+
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		RespondWithError(w, http.StatusBadRequest, "Неверные данные")
-		return
+		responseHandler.ResponseWithError()
 	}
 	user, err := h.useCase.CreateUser(r.Context(), input)
 	if err != nil {

@@ -8,7 +8,7 @@ import (
 )
 
 func (r *UsersRepository) GetAllUsers(ctx context.Context) ([]model.UserOrdinaryInfo, error) {
-	r.logger.Debug("Repository: GetAllUsers (for admin) started")
+
 	var users []model.UserOrdinaryInfo
 	rows, err := r.db.Query(ctx, "SELECT id,login,password,email, registration_date,user_role FROM customer")
 	if err != nil {

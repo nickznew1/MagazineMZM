@@ -1,10 +1,12 @@
 package logger
 
 import (
-	"github.com/go-chi/chi/v5/middleware"
+	"context"
 	"log/slog"
 	"net/http"
 	"time"
+
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func HTTPLogger(log *slog.Logger) func(next http.Handler) http.Handler {
@@ -26,6 +28,8 @@ func HTTPLogger(log *slog.Logger) func(next http.Handler) http.Handler {
 			)
 			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
 
+			ctx := context.WithValue(r.Context(), "log", entry)
+
 			t1 := time.Now()
 
 			defer func() {
@@ -36,7 +40,7 @@ func HTTPLogger(log *slog.Logger) func(next http.Handler) http.Handler {
 				)
 			}()
 
-			next.ServeHTTP(ww, r)
+			next.ServeHTTP(ww, r.WithContext(ctx))
 		}
 		return http.HandlerFunc(fn)
 	}

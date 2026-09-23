@@ -2,17 +2,17 @@ package core_http_response
 
 import (
 	"encoding/json"
-	"log"
+	"log/slog"
 	"net/http"
 )
 
 type HTTPResponseHandler struct {
-	log *log.Logger
+	log *slog.Logger
 
 	rw http.ResponseWriter
 }
 
-func NewHTTPResponseHandler(log *log.Logger, rw http.ResponseWriter) *HTTPResponseHandler {
+func NewHTTPResponseHandler(log *slog.Logger, rw http.ResponseWriter) *HTTPResponseHandler {
 	return &HTTPResponseHandler{
 		log: log,
 		rw:  rw,
