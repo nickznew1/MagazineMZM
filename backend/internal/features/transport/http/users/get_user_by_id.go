@@ -1,22 +1,35 @@
 package users_transport_http
 
 import (
-	"fmt"
 	"net/http"
+
+	core_logger "github.com/nickznew1/MagazineMZM/backend/internal/core/logger"
+	core_http_response "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/response"
 )
 
-func (h *UsersHTTPHandler) GetUserById(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("get user")
-	userIdJWT := r.Context().Value("user_id")
-	idStr, ok := userIdJWT.(string)
+func (h *UsersHTTPHandler) GetUserById(rw http.ResponseWriter, r *http.Request) {
+
+	ctx := r.Context()
+
+	logger := core_logger.FromContext(ctx)
+
+	responseHandler := core_http_response.NewHTTPResponseHandler(logger, rw)
+
+	userIdJWT := ctx.Value("user_id")
+
+	id, ok := userIdJWT.(string)
 	if !ok {
-		RespondWithError(w, http.StatusUnauthorized, "invalid user id format")
+		// NEED TO FIX //
+		http.Error(rw, "invalid JWT token", http.StatusBadRequest)
+		// NEED TO FIX //
 		return
 	}
-	userId, err := h.useCase.FetchProfileInfo(r.Context(), idStr)
+	response, err := h.usersService.FetchProfileInfo(ctx, id)
 	if err != nil {
-		RespondWithError(w, http.StatusBadRequest, "id doesnt find")
+		responseHandler.ErrorResponse(
+			err,
+			"error when trying to fetch profile info")
 		return
 	}
-	RespondWithJSON(w, http.StatusOK, userId)
+	responseHandler.ResponseWithJSON(http.StatusOK, response)
 }

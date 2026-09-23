@@ -1,4 +1,4 @@
-package core_middleware
+package core_middleware_logger
 
 import (
 	"context"
