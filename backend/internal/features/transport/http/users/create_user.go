@@ -2,7 +2,6 @@ package users_transport_http
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -14,6 +13,7 @@ import (
 func (h *UsersHTTPHandler) CreateUser(
 	rw http.ResponseWriter,
 	r *http.Request) {
+
 	var input model.UserOrdinaryInfo
 
 	ctx := r.Context()
@@ -23,19 +23,27 @@ func (h *UsersHTTPHandler) CreateUser(
 	responseHandler := core_http_response.NewHTTPResponseHandler(logger, rw)
 
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		responseHandler.ResponseWithError()
-	}
-	user, err := h.useCase.CreateUser(r.Context(), input)
-	if err != nil {
-		RespondWithError(w, http.StatusBadRequest, "неверные данные")
+		responseHandler.ErrorResponse(
+			err,
+			"error when decode request")
 		return
 	}
-	tokenId := strconv.Itoa(user.Id)
+	response, err := h.usersService.CreateUser(ctx, input)
+	if err != nil {
+		responseHandler.ErrorResponse(
+			err,
+			"service error")
+	}
+
+	tokenId := strconv.Itoa(response.Id)
+
 	token, err := h.auth.NewJWT(tokenId)
 	if err != nil {
-		RespondWithError(w, http.StatusInternalServerError, "oshibka pri sozdanii sessii")
+		responseHandler.ErrorResponse(
+			err,
+			"error when creating JWT token")
 	}
-	RespondWithJSON(w, http.StatusCreated, map[string]string{
+	responseHandler.ResponseWithJSON(http.StatusCreated, map[string]string{
 		"access_token": token,
 	})
 }

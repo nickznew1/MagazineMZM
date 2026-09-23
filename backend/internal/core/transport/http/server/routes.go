@@ -7,15 +7,14 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	core_postgres_pool "github.com/nickznew1/MagazineMZM/backend/internal/core/repository/postgres/pool"
-	core_middleware "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/middleware"
+	auth2 "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/middleware/auth"
+	core_middleware "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/middleware/logger"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/repository"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/service"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/usecase"
 	users_repository_postgres "github.com/nickznew1/MagazineMZM/backend/internal/features/repository/postgres"
 	users_service "github.com/nickznew1/MagazineMZM/backend/internal/features/service/users"
 	users_transport_http "github.com/nickznew1/MagazineMZM/backend/internal/features/transport/http/users"
-	"github.com/nickznew1/MagazineMZM/backend/internal/middleware/authMiddleware"
-	"github.com/nickznew1/MagazineMZM/backend/internal/middleware/logger"
 	"github.com/nickznew1/MagazineMZM/backend/pkg/auth"
 )
 
@@ -28,7 +27,7 @@ func Routes(pool *core_postgres_pool.ConnectionPool, router chi.Router, log *slo
 	if err != nil {
 		return
 	}
-	manager := authMiddleware.NewManager(auth)
+	manager := auth2.NewManager(auth)
 
 	usersRepository := users_repository_postgres.NewUsersRepository(pool.Pool)
 	usersService := users_service.NewUsersService(usersRepository)

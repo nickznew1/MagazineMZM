@@ -1,12 +1,28 @@
 package users_transport_http
 
-import "net/http"
+import (
+	"net/http"
 
-func (h *UsersHTTPHandler) GetAllUsers(w http.ResponseWriter, r *http.Request) {
-	Users, err := h.useCase.GetAllUsers(r.Context())
+	core_logger "github.com/nickznew1/MagazineMZM/backend/internal/core/logger"
+	core_http_response "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/response"
+)
+
+func (h *UsersHTTPHandler) GetAllUsers(
+	rw http.ResponseWriter,
+	r *http.Request) {
+
+	ctx := r.Context()
+
+	logger := core_logger.FromContext(ctx)
+
+	responseHandler := core_http_response.NewHTTPResponseHandler(logger, rw)
+
+	response, err := h.usersService.GetAllUsers(ctx)
 	if err != nil {
-		RespondWithError(w, http.StatusBadRequest, "oshibka")
+		responseHandler.ErrorResponse(
+			err,
+			"service error")
 		return
 	}
-	RespondWithJSON(w, http.StatusCreated, Users)
+	responseHandler.ResponseWithJSON(http.StatusOK, response)
 }
