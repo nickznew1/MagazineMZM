@@ -2,27 +2,62 @@ package users_repository_postgres
 
 import (
 	"context"
-	"log/slog"
+	"fmt"
 
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (r *UsersRepository) UserPasswordChange(ctx context.Context, input model.PasswordChange) (model.PasswordChange, error) {
+func (r *UsersRepository) UserPasswordChange(
+	ctx context.Context,
+	input model.PasswordChange) (model.PasswordChange, error) {
 	var check model.PasswordChange
-	r.logger.Debug("Repository: UserPasswordChange started", "input :", input)
-	err := r.db.QueryRow(ctx, "SELECT password FROM customer WHERE id =$1", input.Id).Scan(&check.OldPassword)
+	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
+	defer cancel()
+
+	query := `
+    SELECT password 
+    FROM customer 
+    WHERE id =$1
+    `
+
+	row := r.pool.QueryRow(ctx, query, input.Id)
+
+	err := row.Scan(
+		&check.OldPassword,
+	)
+
+	if err != nil {
+		return model.PasswordChange{}, fmt.Errorf("scan query error:%w", err)
+	}
+
 	err = bcrypt.CompareHashAndPassword([]byte(check.OldPassword), []byte(input.OldPassword))
 	if err != nil {
-		r.logger.Error("Repository: UserPasswordChange bcrypt error - user writes wrong ordinary password", slog.Any("bcrypt_err: ", err))
-		return check, err
+		return model.PasswordChange{}, fmt.Errorf("bcrypt compare error: %w", err)
 	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.NewPassword), 12)
-	err = r.db.QueryRow(ctx, "UPDATE customer SET password = $1 WHERE id = $2 RETURNING password,id", hashedPassword, input.Id).Scan(&check.NewPassword, &check.Id)
 	if err != nil {
-		r.logger.Error("Repository: UserPasswordChange bcrypt error when update password for user", slog.Any("db_err: ", err))
-		return check, err
+		return model.PasswordChange{}, fmt.Errorf("bcrypt generate error: %w", err)
 	}
-	r.logger.Debug("Repository: UserPasswordChange success", "input :", input)
+
+	query = `
+    UPDATE customer 
+    SET password = $1 
+    WHERE id = $2 
+    RETURNING password,id
+    `
+
+	row = r.pool.QueryRow(ctx, query, hashedPassword, input.Id)
+
+	err = row.Scan(
+		&check.NewPassword,
+		&check.Id,
+	)
+
+	if err != nil {
+		return model.PasswordChange{}, fmt.Errorf("scan query error: %w", err)
+	}
+
 	return check, nil
 }
