@@ -2,19 +2,38 @@ package users_repository_postgres
 
 import (
 	"context"
-	"log/slog"
+	"fmt"
 
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 )
 
-func (r *UsersRepository) FetchProfileDeliveryInfo(ctx context.Context, id string) (model.UserDeliveryInfoOut, error) {
+func (r *UsersRepository) FetchProfileDeliveryInfo(
+	ctx context.Context,
+	id string) (model.UserDeliveryInfoOut, error) {
+
 	var profileDeliveryInfo model.UserDeliveryInfoOut
-	r.logger.Debug("Repository: FetchProfileDeliveryInfo started (goroutines)", "user_id: ", id)
-	err := r.db.QueryRow(ctx, "SELECT id,phone_number, city, address from customer_delivery_info WHERE id = $1", id).Scan(&profileDeliveryInfo.Id, &profileDeliveryInfo.PhoneNumber, &profileDeliveryInfo.City, &profileDeliveryInfo.Address)
+
+	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
+	defer cancel()
+
+	query := `
+    SELECT id,phone_number, city, address 
+    from customer_delivery_info 
+    WHERE id = $1
+    `
+
+	row := r.pool.QueryRow(ctx, query, id)
+
+	err := row.Scan(
+		&profileDeliveryInfo.Id,
+		&profileDeliveryInfo.PhoneNumber,
+		&profileDeliveryInfo.City,
+		&profileDeliveryInfo.Address,
+	)
+
 	if err != nil {
-		r.logger.Error("Repository: FetchProfileDeliveryInfo error - can t find user info with id", slog.Any("db_err: ", err))
-		return profileDeliveryInfo, err
+		return model.UserDeliveryInfoOut{}, fmt.Errorf("scan query err: %w", err)
 	}
-	r.logger.Debug("Repository: FetchProfileDeliveryInfo success (goroutines)", "user_id: ", id)
+
 	return profileDeliveryInfo, nil
 }

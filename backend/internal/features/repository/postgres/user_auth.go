@@ -2,25 +2,29 @@ package users_repository_postgres
 
 import (
 	"context"
-	"log/slog"
+	"fmt"
 
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (r *UsersRepository) UserAuth(ctx context.Context, input model.UserOrdinaryInfo) (model.UserOrdinaryInfo, error) {
-	r.logger.Debug("Repository: UserAuth started", "user_id: ", input.Id)
+func (r *UsersRepository) UserAuth(
+	ctx context.Context,
+	input model.UserOrdinaryInfo) (model.UserOrdinaryInfo, error) {
+
+	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
+	defer cancel()
 
 	user, err := r.GetUserById(ctx, input)
 	if err != nil {
-		r.logger.Error("Repository: UserAuth error - can t get user info when check user_id", slog.Any("db_err: ", err))
-		return user, err
+		return model.UserOrdinaryInfo{}, fmt.Errorf("repo error:%w", err)
 	}
+
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
+
 	if err != nil {
-		r.logger.Error("Repository: UserAuth error - wrong password for user", slog.Any("db_err: ", err))
-		return user, err
+		return model.UserOrdinaryInfo{}, fmt.Errorf("bcrypt error: %w", err)
 	}
-	r.logger.Debug("Repository: UserAuth success", "user_id: ", input.Id)
+
 	return user, nil
 }

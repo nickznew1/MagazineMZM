@@ -1,12 +1,14 @@
 package users_repository_postgres
 
-import "github.com/jackc/pgx/v5/pgxpool"
+import (
+	core_postgres_pool "github.com/nickznew1/MagazineMZM/backend/internal/core/repository/postgres/pool"
+)
 
 type UsersRepository struct {
-	pool *pgxpool.Pool
+	pool core_postgres_pool.Pool
 }
 
-func NewUsersRepository(pool *pgxpool.Pool) *UsersRepository {
+func NewUsersRepository(pool core_postgres_pool.Pool) *UsersRepository {
 	return &UsersRepository{
 		pool: pool,
 	}

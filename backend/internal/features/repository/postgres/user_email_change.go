@@ -2,29 +2,57 @@ package users_repository_postgres
 
 import (
 	"context"
-	"log/slog"
+	"fmt"
 
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 )
 
-func (r *UsersRepository) UserChangeEmail(ctx context.Context, input model.UserOrdinaryInfo) (model.UserOrdinaryInfo, error) {
+func (r *UsersRepository) UserChangeEmail(
+	ctx context.Context,
+	input model.UserOrdinaryInfo) (model.UserOrdinaryInfo, error) {
+
+	ctx, cancel := context.WithTimeout(ctx, r.pool.OpTimeout())
+	defer cancel()
+
 	var user model.UserOrdinaryInfo
 	var loginExists bool
-	r.logger.Debug("Repository: UserChangeEmail started", "input:", input)
-	err := r.db.QueryRow(ctx, "SELECT EXISTS (SELECT 1 FROM customer WHERE login =$1)", input.Login).Scan(&loginExists)
+
+	query := `
+     SELECT EXISTS 
+    (SELECT 1 FROM customer 
+    WHERE login =$1)
+   `
+
+	row := r.pool.QueryRow(ctx, query, input.Login)
+
+	err := row.Scan(
+		&loginExists,
+	)
+
 	if err != nil {
-		r.logger.Error("Repository: UserChangeEmail error when update email for user - login doesn't found", slog.Any("db_err: ", err))
-		return user, err
+		return model.UserOrdinaryInfo{}, fmt.Errorf("scan query error:%w", err)
 	}
+
 	if !loginExists {
-		r.logger.Error("Repository: UserChangeEmail error when update email for user - login doesn't found", slog.Any("db_err: ", err))
-		return user, err
+		return model.UserOrdinaryInfo{}, fmt.Errorf("user with id='%d' not exists", input.Id)
 	}
-	err = r.db.QueryRow(ctx, "UPDATE customer SET email = $1 WHERE login = $2 RETURNING login,email", input.Email, input.Login).Scan(&user.Login, &user.Email)
+
+	query = `
+    UPDATE customer 
+    SET email = $1 
+    WHERE login = $2 
+    RETURNING login,email
+     `
+
+	row = r.pool.QueryRow(ctx, query, input.Email, input.Login)
+
+	err = row.Scan(
+		&user.Login,
+		&user.Email,
+	)
+
 	if err != nil {
-		r.logger.Error("Repository: UserChangeEmail error when update email for user (db error)", slog.Any("db_err: ", err))
-		return user, err
+		return model.UserOrdinaryInfo{}, fmt.Errorf("scan query error: %w", err)
 	}
-	r.logger.Debug("Repository: UserChangeEmail success", "input:", input)
 	return user, nil
 }
