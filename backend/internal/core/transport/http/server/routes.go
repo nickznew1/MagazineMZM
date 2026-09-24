@@ -13,7 +13,10 @@ import (
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/service"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/usecase"
 	users_repository_postgres "github.com/nickznew1/MagazineMZM/backend/internal/features/repository/postgres"
+	cart_repository_postgres "github.com/nickznew1/MagazineMZM/backend/internal/features/repository/postgres/cart"
+	cart_service "github.com/nickznew1/MagazineMZM/backend/internal/features/service/cart"
 	users_service "github.com/nickznew1/MagazineMZM/backend/internal/features/service/users"
+	cart_transport_http "github.com/nickznew1/MagazineMZM/backend/internal/features/transport/http/cart"
 	users_transport_http "github.com/nickznew1/MagazineMZM/backend/internal/features/transport/http/users"
 	"github.com/nickznew1/MagazineMZM/backend/pkg/auth"
 )
@@ -32,12 +35,14 @@ func Routes(pool *core_postgres_pool.ConnectionPool, router chi.Router, log *slo
 	usersRepository := users_repository_postgres.NewUsersRepository(pool.Pool)
 	usersService := users_service.NewUsersService(usersRepository)
 	usersTransport := users_transport_http.NewUsersHTTPHandler(usersService, auth)
+	cartRepository := cart_repository_postgres.NewCartRepository(pool)
+	cartService := cart_service.NewCartService(cartRepository)
+	cartTransport := cart_transport_http.NewCartHTTPHandler(cartService)
+
 	itemRepo := repository.NewItemRepo(sql, log)
 	itemUseCase := usecase.NewItemUseCase(itemRepo)
 	itemService := service.NewItemService(itemUseCase)
-	cartRepo := repository.NewCartRepo(sql, log)
-	cartUseCase := usecase.NewCartUseCase(cartRepo)
-	cartService := service.NewCartService(cartUseCase)
+
 	applicationRepo := repository.NewApplicationRepo(sql, log)
 	applicationUseCase := usecase.NewApplicationUseCase(applicationRepo)
 	applicationService := service.NewApplicationService(applicationUseCase)
@@ -51,7 +56,7 @@ func Routes(pool *core_postgres_pool.ConnectionPool, router chi.Router, log *slo
 		r.Use(manager.AuthMiddleware)
 		r.Get("/profile/", usersTransport.GetUserProfile)
 		r.Get("/user/", usersTransport.GetUserById)
-		r.Get("/cart/", cartService.GetCart)
+		r.Get("/cart/", cartTransport.GetCart)
 		r.Get("/checkout", usersTransport.GetCheckoutInfo)
 		r.Put("/applications", applicationService.CreateApplication)
 		r.Get("/checkout/complete/{id}", applicationService.GetApplication)
@@ -60,9 +65,9 @@ func Routes(pool *core_postgres_pool.ConnectionPool, router chi.Router, log *slo
 
 	router.Route("/", func(r chi.Router) {
 		r.Route("/cart", func(r chi.Router) {
-			r.Post("/delete/", cartService.DeleteUserItem)
-			r.Post("/add/", cartService.CreateUserItem)
-			r.Post("/calc/", cartService.CalcUserItem)
+			r.Post("/delete/", cartTransport.DeleteFromCart)
+			r.Post("/add/", cartTransport.AddToCart)
+			r.Post("/calc/", cartTransport.CalcItemFromCart)
 		})
 
 		r.Route("/auth", func(r chi.Router) {
