@@ -3,7 +3,7 @@ package core_middleware_auth
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"fmt"
+	"log/slog"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -22,30 +22,29 @@ type TokenManager interface {
 type Manager struct {
 	signingKey   string
 	tokenManager TokenManager
+	log          *slog.Logger
 }
 
-func NewManager(tokenManager TokenManager) (*Manager, error) {
+func NewManager(log *slog.Logger) (*Manager, error) {
 	return &Manager{
-		signingKey:   signingKey,
-		tokenManager: tokenManager,
+		signingKey: signingKey,
+		log:        log,
 	}, nil
 }
 
 func (m *Manager) NewJWT(userId string) (string, error) {
-	fmt.Println("CREATING JWT")
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
 		ExpiresAt: time.Now().Add(24 * time.Hour).Unix(),
 		Subject:   userId,
 	})
-	fmt.Println("Create new JWT for ", userId)
-	fmt.Println("token")
 	return token.SignedString([]byte(m.signingKey))
 }
 
 func (m *Manager) Parse(accessToken string) (string, error) {
 	token, err := jwt.Parse(accessToken, func(token *jwt.Token) (i interface{}, err error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			m.log.Error("unexpected signing method: ", token.Header["alg"])
+			return nil, err
 		}
 
 		return []byte(m.signingKey), nil
@@ -55,9 +54,10 @@ func (m *Manager) Parse(accessToken string) (string, error) {
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return "", fmt.Errorf("error get user claims from token")
+		m.log.Error("error get user claims from token", err)
+		return "", err
 	}
-	fmt.Println("PARSED TOKEN ", claims)
+
 	return claims["sub"].(string), nil
 }
 
@@ -66,6 +66,7 @@ func (m *Manager) NewRefreshToken() (string, error) {
 
 	_, err := rand.Read(b)
 	if err != nil {
+		m.log.Error("error get user refresh token", err)
 		return "", err
 	}
 

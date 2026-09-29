@@ -2,39 +2,42 @@ package core_transport_http_server
 
 import (
 	"log/slog"
-	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	core_postgres_pool "github.com/nickznew1/MagazineMZM/backend/internal/core/repository/postgres/pool"
-	auth2 "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/middleware/auth"
+	core_middleware_auth "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/middleware/auth"
 	core_middleware "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/middleware/logger"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/repository"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/service"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/usecase"
-	users_repository_postgres "github.com/nickznew1/MagazineMZM/backend/internal/features/repository/postgres"
 	cart_repository_postgres "github.com/nickznew1/MagazineMZM/backend/internal/features/repository/postgres/cart"
+	users_repository_postgres "github.com/nickznew1/MagazineMZM/backend/internal/features/repository/postgres/user"
 	cart_service "github.com/nickznew1/MagazineMZM/backend/internal/features/service/cart"
 	users_service "github.com/nickznew1/MagazineMZM/backend/internal/features/service/users"
 	cart_transport_http "github.com/nickznew1/MagazineMZM/backend/internal/features/transport/http/cart"
 	users_transport_http "github.com/nickznew1/MagazineMZM/backend/internal/features/transport/http/users"
-	"github.com/nickznew1/MagazineMZM/backend/pkg/auth"
 )
 
-func Routes(pool *core_postgres_pool.ConnectionPool, router chi.Router, log *slog.Logger) {
+func Routes(
+	pool *core_postgres_pool.ConnectionPool,
+	router chi.Router,
+	log *slog.Logger) chi.Router {
 
 	router.Use(middleware.RequestID)
 	router.Use(core_middleware.LoggerMiddleware(log))
 	router.Use(middleware.Recoverer)
-	auth, err := auth.NewManager()
-	if err != nil {
-		return
-	}
-	manager := auth2.NewManager(auth)
 
-	usersRepository := users_repository_postgres.NewUsersRepository(pool.Pool)
+	AuthManager, err := core_middleware_auth.NewManager(log)
+	if err != nil {
+		log.Error("error when initializing AuthManager: ", err)
+		panic(err)
+	}
+
+	usersRepository := users_repository_postgres.NewUsersRepository(pool)
 	usersService := users_service.NewUsersService(usersRepository)
-	usersTransport := users_transport_http.NewUsersHTTPHandler(usersService, auth)
+	usersTransport := users_transport_http.NewUsersHTTPHandler(usersService, AuthManager)
+
 	cartRepository := cart_repository_postgres.NewCartRepository(pool)
 	cartService := cart_service.NewCartService(cartRepository)
 	cartTransport := cart_transport_http.NewCartHTTPHandler(cartService)
@@ -47,13 +50,8 @@ func Routes(pool *core_postgres_pool.ConnectionPool, router chi.Router, log *slo
 	applicationUseCase := usecase.NewApplicationUseCase(applicationRepo)
 	applicationService := service.NewApplicationService(applicationUseCase)
 
-	ImageFs := http.FileServer(http.Dir("./public/images"))
-	router.Handle("/images/*", http.StripPrefix("/images/", ImageFs))
-	PdfFs := http.FileServer(http.Dir("./public/documents"))
-	router.Handle("/documents/*", http.StripPrefix("/documents/", PdfFs))
-
 	router.Group(func(r chi.Router) {
-		r.Use(manager.AuthMiddleware)
+		r.Use(AuthManager.AuthMiddleware)
 		r.Get("/profile/", usersTransport.GetUserProfile)
 		r.Get("/user/", usersTransport.GetUserById)
 		r.Get("/cart/", cartTransport.GetCart)
@@ -103,4 +101,5 @@ func Routes(pool *core_postgres_pool.ConnectionPool, router chi.Router, log *slo
 		})
 	})
 
+	return router
 }

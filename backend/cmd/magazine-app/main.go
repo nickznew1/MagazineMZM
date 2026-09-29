@@ -55,5 +55,5 @@ func main() {
 
 	router := core_transport_http_server.NewRouter()
 
-	core_transport_http_server.Routes(pool, router, logger)
+	router = core_transport_http_server.Routes(pool, router, logger)
 }
