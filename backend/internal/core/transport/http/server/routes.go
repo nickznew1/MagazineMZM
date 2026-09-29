@@ -12,10 +12,13 @@ import (
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/service"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/usecase"
 	cart_repository_postgres "github.com/nickznew1/MagazineMZM/backend/internal/features/repository/postgres/cart"
+	item_repository_postgres "github.com/nickznew1/MagazineMZM/backend/internal/features/repository/postgres/item"
 	users_repository_postgres "github.com/nickznew1/MagazineMZM/backend/internal/features/repository/postgres/user"
 	cart_service "github.com/nickznew1/MagazineMZM/backend/internal/features/service/cart"
+	item_service "github.com/nickznew1/MagazineMZM/backend/internal/features/service/item"
 	users_service "github.com/nickznew1/MagazineMZM/backend/internal/features/service/users"
 	cart_transport_http "github.com/nickznew1/MagazineMZM/backend/internal/features/transport/http/cart"
+	item_transport_http "github.com/nickznew1/MagazineMZM/backend/internal/features/transport/http/item"
 	users_transport_http "github.com/nickznew1/MagazineMZM/backend/internal/features/transport/http/users"
 )
 
@@ -42,9 +45,9 @@ func Routes(
 	cartService := cart_service.NewCartService(cartRepository)
 	cartTransport := cart_transport_http.NewCartHTTPHandler(cartService)
 
-	itemRepo := repository.NewItemRepo(sql, log)
-	itemUseCase := usecase.NewItemUseCase(itemRepo)
-	itemService := service.NewItemService(itemUseCase)
+	itemRepository := item_repository_postgres.NewItemRepository(pool)
+	itemService := item_service.NewItemService(itemRepository)
+	itemTransport := item_transport_http.NewItemHTTPHandler(itemService)
 
 	applicationRepo := repository.NewApplicationRepo(sql, log)
 	applicationUseCase := usecase.NewApplicationUseCase(applicationRepo)
@@ -83,11 +86,11 @@ func Routes(
 		})
 
 		r.Route("/item", func(r chi.Router) {
-			r.Post("/create", itemService.CreateItem)
-			r.Get("/{id}", itemService.GetItemById)
-			r.Get("/spec/{id}", itemService.GetItemSpecById)
-			r.Get("/all", itemService.GetAllItems)
-			r.Delete("/delete", itemService.DeleteItem)
+			r.Post("/create", itemTransport.CreateItem)
+			r.Get("/{id}", itemTransport.GetById)
+			r.Get("/spec/{id}", itemTransport.GetSpecById)
+			r.Get("/all", itemTransport.GetAll)
+			r.Delete("/delete", itemTransport.DeleteItem)
 		})
 
 		r.Route("/admin", func(r chi.Router) {
@@ -95,9 +98,9 @@ func Routes(
 			r.Get("/applications", applicationService.GetAllApplicationsForAdmin)
 			r.Post("/status", applicationService.SetApplicationStatus)
 			r.Get("/application/{id}", applicationService.GetApplicationForAdmin)
-			r.Post("/visible/{id}", itemService.ChangeVisible)
-			r.Get("/props", itemService.GetAllPropsName)
-			r.Put("/newprops/{id}", itemService.SetNewProps)
+			r.Post("/visible/{id}", itemTransport.ChangeVisible)
+			r.Get("/props", itemTransport.GetAllPropsName)
+			r.Put("/newprops/{id}", itemTransport.SetProps)
 		})
 	})
 
