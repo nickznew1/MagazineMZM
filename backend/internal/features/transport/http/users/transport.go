@@ -3,14 +3,14 @@ package users_transport_http
 import (
 	"context"
 
+	core_middleware_auth "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/middleware/auth"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 	cart_transport_http "github.com/nickznew1/MagazineMZM/backend/internal/features/transport/http/cart"
-	"github.com/nickznew1/MagazineMZM/backend/pkg/auth"
 )
 
 type UsersHTTPHandler struct {
 	usersService UsersService
-	auth         auth.TokenManager
+	auth         *core_middleware_auth.Manager
 	cartUseCase  cart_transport_http.CartService
 }
 
@@ -30,7 +30,7 @@ type UsersService interface {
 	GetAllUsers(ctx context.Context) ([]model.UserOrdinaryInfo, error)
 }
 
-func NewUsersHTTPHandler(usersService UsersService, auth auth.TokenManager) *UsersHTTPHandler {
+func NewUsersHTTPHandler(usersService UsersService, auth *core_middleware_auth.Manager) *UsersHTTPHandler {
 	return &UsersHTTPHandler{
 		usersService: usersService,
 		auth:         auth,

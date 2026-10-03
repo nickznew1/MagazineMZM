@@ -2,6 +2,7 @@ package core_transport_http_server
 
 import (
 	"log/slog"
+	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -48,6 +49,14 @@ func Routes(
 	applicationRepository := applications_repository_postgres.NewApplicationRepository(pool)
 	applicationService := applications_service.NewApplicationService(applicationRepository)
 	applicationTransport := applications_transport_http.NewApplicationHTTPHandler(applicationService)
+
+	ImageFs := http.FileServer(http.Dir("../public/images"))
+
+	router.Handle("/images/*", http.StripPrefix("/images/", ImageFs))
+
+	PdfFs := http.FileServer(http.Dir("../public/documents"))
+
+	router.Handle("/documents/*", http.StripPrefix("/documents/", PdfFs))
 
 	router.Group(func(r chi.Router) {
 		r.Use(AuthManager.AuthMiddleware)

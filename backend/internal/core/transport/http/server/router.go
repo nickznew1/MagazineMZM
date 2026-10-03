@@ -2,7 +2,6 @@ package core_transport_http_server
 
 import (
 	"log/slog"
-	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
@@ -22,14 +21,6 @@ func NewRouter(pool *core_postgres_pool.ConnectionPool, log *slog.Logger) chi.Ro
 	}))
 
 	Routes(pool, router, log)
-
-	ImageFs := http.FileServer(http.Dir("./public/images"))
-
-	router.Handle("/images/*", http.StripPrefix("/images/", ImageFs))
-
-	PdfFs := http.FileServer(http.Dir("./public/documents"))
-
-	router.Handle("/documents/*", http.StripPrefix("/documents/", PdfFs))
 
 	return router
 }
