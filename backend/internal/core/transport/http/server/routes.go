@@ -8,15 +8,15 @@ import (
 	core_postgres_pool "github.com/nickznew1/MagazineMZM/backend/internal/core/repository/postgres/pool"
 	core_middleware_auth "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/middleware/auth"
 	core_middleware "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/middleware/logger"
-	"github.com/nickznew1/MagazineMZM/backend/internal/domain/repository"
-	"github.com/nickznew1/MagazineMZM/backend/internal/domain/service"
-	"github.com/nickznew1/MagazineMZM/backend/internal/domain/usecase"
+	applications_repository_postgres "github.com/nickznew1/MagazineMZM/backend/internal/features/repository/postgres/applications"
 	cart_repository_postgres "github.com/nickznew1/MagazineMZM/backend/internal/features/repository/postgres/cart"
 	item_repository_postgres "github.com/nickznew1/MagazineMZM/backend/internal/features/repository/postgres/item"
 	users_repository_postgres "github.com/nickznew1/MagazineMZM/backend/internal/features/repository/postgres/user"
+	applications_service "github.com/nickznew1/MagazineMZM/backend/internal/features/service/applications"
 	cart_service "github.com/nickznew1/MagazineMZM/backend/internal/features/service/cart"
 	item_service "github.com/nickznew1/MagazineMZM/backend/internal/features/service/item"
 	users_service "github.com/nickznew1/MagazineMZM/backend/internal/features/service/users"
+	applications_transport_http "github.com/nickznew1/MagazineMZM/backend/internal/features/transport/http/applications"
 	cart_transport_http "github.com/nickznew1/MagazineMZM/backend/internal/features/transport/http/cart"
 	item_transport_http "github.com/nickznew1/MagazineMZM/backend/internal/features/transport/http/item"
 	users_transport_http "github.com/nickznew1/MagazineMZM/backend/internal/features/transport/http/users"
@@ -49,9 +49,9 @@ func Routes(
 	itemService := item_service.NewItemService(itemRepository)
 	itemTransport := item_transport_http.NewItemHTTPHandler(itemService)
 
-	applicationRepo := repository.NewApplicationRepo(sql, log)
-	applicationUseCase := usecase.NewApplicationUseCase(applicationRepo)
-	applicationService := service.NewApplicationService(applicationUseCase)
+	applicationRepository := applications_repository_postgres.NewApplicationRepository(pool)
+	applicationService := applications_service.NewApplicationService(applicationRepository)
+	applicationTransport := applications_transport_http.NewApplicationHTTPHandler(applicationService)
 
 	router.Group(func(r chi.Router) {
 		r.Use(AuthManager.AuthMiddleware)
@@ -59,9 +59,9 @@ func Routes(
 		r.Get("/user/", usersTransport.GetUserById)
 		r.Get("/cart/", cartTransport.GetCart)
 		r.Get("/checkout", usersTransport.GetCheckoutInfo)
-		r.Put("/applications", applicationService.CreateApplication)
-		r.Get("/checkout/complete/{id}", applicationService.GetApplication)
-		r.Get("/applications/all", applicationService.GetAllApplicationsForUser)
+		r.Put("/applications", applicationTransport.CreateApplication)
+		r.Get("/checkout/complete/{id}", applicationTransport.GetApplication)
+		r.Get("/applications/all", applicationTransport.GetAllApplicationsForUser)
 	})
 
 	router.Route("/", func(r chi.Router) {
@@ -95,9 +95,9 @@ func Routes(
 
 		r.Route("/admin", func(r chi.Router) {
 			r.Get("/user", usersTransport.GetAllUsers)
-			r.Get("/applications", applicationService.GetAllApplicationsForAdmin)
-			r.Post("/status", applicationService.SetApplicationStatus)
-			r.Get("/application/{id}", applicationService.GetApplicationForAdmin)
+			r.Get("/applications", applicationTransport.GetAllApplicationsForAdmin)
+			r.Post("/status", applicationTransport.SetApplicationStatus)
+			r.Get("/application/{id}", applicationTransport.GetApplicationForAdmin)
 			r.Post("/visible/{id}", itemTransport.ChangeVisible)
 			r.Get("/props", itemTransport.GetAllPropsName)
 			r.Put("/newprops/{id}", itemTransport.SetProps)
