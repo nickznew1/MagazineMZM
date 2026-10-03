@@ -20,16 +20,15 @@ type TokenManager interface {
 }
 
 type Manager struct {
-	signingKey   string
-	tokenManager TokenManager
-	log          *slog.Logger
+	signingKey string
+	log        *slog.Logger
 }
 
-func NewManager(log *slog.Logger) (*Manager, error) {
+func NewManager(log *slog.Logger) *Manager {
 	return &Manager{
 		signingKey: signingKey,
 		log:        log,
-	}, nil
+	}
 }
 
 func (m *Manager) NewJWT(userId string) (string, error) {

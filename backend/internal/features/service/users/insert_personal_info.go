@@ -11,7 +11,7 @@ func (s *UsersService) RecordPersonalInfo(
 	ctx context.Context,
 	input model.UserPersonalInfo) (model.UserPersonalInfo, error) {
 
-	user, err := s.RecordPersonalInfo(ctx, input)
+	user, err := s.usersRepository.RecordPersonalInfo(ctx, input)
 	if err != nil {
 		return model.UserPersonalInfo{}, fmt.Errorf("error when record personal info for id='%d':%w", input.Id)
 	}

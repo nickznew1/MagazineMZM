@@ -28,7 +28,7 @@ func (h *UsersHTTPHandler) UserAuth(
 			"error when decode request body")
 		return
 	}
-	userAuth, err := h.usersService.UserAuth(r.Context(), input)
+	userAuth, err := h.usersService.UserAuth(ctx, input)
 	if err != nil {
 		responseHandler.ErrorResponse(
 			err,

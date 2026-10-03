@@ -3,7 +3,6 @@ package item_repository_postgres
 import (
 	"context"
 	"fmt"
-	"log/slog"
 
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 )
@@ -36,7 +35,7 @@ func (r *ItemRepository) GetSpecById(
 			&specRow.SpecFileLink,
 			&specRow.SpecFilePic)
 		if err != nil {
-		    return []model.ItemSpecFiles, fmt.Errorf("scan rows error: %w", err)
+			return []model.ItemSpecFiles{}, fmt.Errorf("scan rows error: %w", err)
 		}
 		specStore = append(specStore, specRow)
 	}

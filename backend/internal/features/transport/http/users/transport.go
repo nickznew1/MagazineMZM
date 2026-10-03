@@ -4,14 +4,14 @@ import (
 	"context"
 
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
-	"github.com/nickznew1/MagazineMZM/backend/internal/domain/usecase"
+	cart_transport_http "github.com/nickznew1/MagazineMZM/backend/internal/features/transport/http/cart"
 	"github.com/nickznew1/MagazineMZM/backend/pkg/auth"
 )
 
 type UsersHTTPHandler struct {
 	usersService UsersService
 	auth         auth.TokenManager
-	cartUseCase  *usecase.CartUseCase
+	cartUseCase  cart_transport_http.CartService
 }
 
 type UsersService interface {

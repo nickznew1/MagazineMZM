@@ -15,5 +15,5 @@ func NewCORS(config Config, router chi.Router) {
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))
-	
+
 }

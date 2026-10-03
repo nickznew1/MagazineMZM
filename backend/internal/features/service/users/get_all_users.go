@@ -11,7 +11,7 @@ func (s *UsersService) GetAllUsers(
 	ctx context.Context) (
 	[]model.UserOrdinaryInfo, error,
 ) {
-	user, err := s.GetAllUsers(ctx)
+	user, err := s.usersRepository.GetAllUsers(ctx)
 	if err != nil {
 		return []model.UserOrdinaryInfo{}, fmt.Errorf("error when getting all users: %w", err)
 	}

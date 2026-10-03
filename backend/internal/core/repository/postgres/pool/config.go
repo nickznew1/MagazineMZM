@@ -9,8 +9,8 @@ import (
 
 type Config struct {
 	Host     string        `envconfig:"HOST"     required:"true"`
-	Database string        `envconfig:"DATABASE" default:"5432"`
-	Port     string        `envconfig:"PORT"     required:"true"`
+	Database string        `envconfig:"DATABASE" required:"true"`
+	Port     string        `envconfig:"PORT"    default:"5432" `
 	Password string        `envconfig:"PASSWORD" required:"true"`
 	Ssl      string        `envconfig:"SSL"      required:"true"`
 	User     string        `envconfig:"USER"     required:"true"`

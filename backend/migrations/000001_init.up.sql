@@ -2,7 +2,7 @@ CREATE TABLE customer
 (
     id       SERIAL PRIMARY KEY,
     login    VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(30)  NOT NULL,
+    password VARCHAR(60)  NOT NULL,
     email    VARCHAR(50) UNIQUE NOT NULL,
     user_role VARCHAR(50) NOT NULL DEFAULT 'ordinary',
     registration_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP

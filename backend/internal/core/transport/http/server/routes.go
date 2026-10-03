@@ -31,11 +31,7 @@ func Routes(
 	router.Use(core_middleware.LoggerMiddleware(log))
 	router.Use(middleware.Recoverer)
 
-	AuthManager, err := core_middleware_auth.NewManager(log)
-	if err != nil {
-		log.Error("error when initializing AuthManager: ", err)
-		panic(err)
-	}
+	AuthManager := core_middleware_auth.NewManager(log)
 
 	usersRepository := users_repository_postgres.NewUsersRepository(pool)
 	usersService := users_service.NewUsersService(usersRepository)

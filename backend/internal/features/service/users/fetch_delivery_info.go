@@ -11,7 +11,7 @@ func (s *UsersService) FetchProfileDeliveryInfo(
 	ctx context.Context,
 	id string) (model.UserDeliveryInfoOut, error) {
 
-	user, err := s.FetchProfileDeliveryInfo(ctx, id)
+	user, err := s.usersRepository.FetchProfileDeliveryInfo(ctx, id)
 	if err != nil {
 		return model.UserDeliveryInfoOut{}, fmt.Errorf("error when fetching profile delivery info(service) with id ='%s': %w", id, err)
 	}

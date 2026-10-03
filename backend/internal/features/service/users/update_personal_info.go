@@ -11,7 +11,7 @@ func (s *UsersService) UpdatePersonalInfo(
 	ctx context.Context,
 	input model.UserPersonalInfo) (model.UserPersonalInfo, error) {
 
-	user, err := s.UpdatePersonalInfo(ctx, input)
+	user, err := s.usersRepository.UpdatePersonalInfo(ctx, input)
 	if err != nil {
 		return model.UserPersonalInfo{}, fmt.Errorf("error when update personal info for id='%d': %w", input.Id, err)
 	}

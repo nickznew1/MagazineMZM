@@ -24,6 +24,9 @@ func (r *UsersRepository) CreateUser(
 
 	input.Password = string(hashedPassword)
 
+	fmt.Println(input.Password)
+	fmt.Println(len([]byte(input.Password)))
+
 	query := `INSERT INTO customer 
     (login,password, email) VALUES ($1,$2,$3) 
     RETURNING id,login,password,email`

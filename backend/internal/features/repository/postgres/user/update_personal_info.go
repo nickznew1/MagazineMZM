@@ -24,10 +24,15 @@ func (r *UsersRepository) UpdatePersonalInfo(
     RETURNING company, first_name, second_name
     `
 
-	row := r.pool.QueryRow(ctx, query, input.Id, input.Company, input.FirstName, input.SecondName)
+	row := r.pool.QueryRow(
+		ctx,
+		query,
+		input.Id,
+		input.Company,
+		input.FirstName,
+		input.SecondName)
 
 	err := row.Scan(
-		&userInfo.Id,
 		&userInfo.Company,
 		&userInfo.FirstName,
 		&userInfo.SecondName,

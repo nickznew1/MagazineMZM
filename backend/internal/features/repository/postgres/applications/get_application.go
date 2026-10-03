@@ -64,7 +64,7 @@ func (r *ApplicationRepository) GetApplication(
     DELETE FROM customer_item 
            WHERE customer_id = $1`
 
-	cmpTag, err := r.pool.Exec(ctx, query)
+	cmpTag, err := r.pool.Exec(ctx, query, userId)
 	if err != nil {
 		return model.Application{},
 			fmt.Errorf("exec query error: %w", err)

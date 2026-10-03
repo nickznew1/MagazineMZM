@@ -31,8 +31,8 @@ func NewConnectionPool(config Config, ctx context.Context) (*ConnectionPool, err
 	connectionString := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s",
 		config.User,
 		config.Password,
-		config.Port,
 		config.Host,
+		config.Port,
 		config.Database,
 		config.Ssl,
 	)

@@ -12,7 +12,7 @@ func (s *ApplicationService) GetApplication(
 	id string,
 	userId string) (model.Application, error) {
 
-	application, err := s.GetApplication(ctx, id, userId)
+	application, err := s.applicationRepository.GetApplication(ctx, id, userId)
 	if err != nil {
 		return model.Application{}, fmt.Errorf("failed to get application id ='%s' for user id ='%s' : %w", id, userId, err)
 	}

@@ -43,17 +43,15 @@ func main() {
 	logger.Info("Starting backend MZM app")
 
 	logger.Debug("Debug messages are enabled")
+	router := core_transport_http_server.NewRouter(pool, logger)
 
 	httpServer := core_transport_http_server.NewHTTPServer(
 		core_transport_http_server.NewConfigMust(),
 		logger,
 	)
 
-	if err := httpServer.Run(ctx); err != nil {
+	if err := httpServer.Run(ctx, router); err != nil {
 		logger.Error("Failed to run http server", error.Error(err))
 	}
 
-	router := core_transport_http_server.NewRouter()
-
-	router = core_transport_http_server.Routes(pool, router, logger)
 }

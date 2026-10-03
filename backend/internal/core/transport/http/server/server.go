@@ -6,11 +6,14 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type HTTPServer struct {
 	config Config
 	log    *slog.Logger
+	router chi.Router
 }
 
 func NewHTTPServer(
@@ -24,9 +27,10 @@ func NewHTTPServer(
 	}
 }
 
-func (h *HTTPServer) Run(ctx context.Context) error {
+func (h *HTTPServer) Run(ctx context.Context, router chi.Router) error {
 	server := http.Server{
-		Addr: h.config.Port,
+		Addr:    h.config.Port,
+		Handler: router,
 	}
 
 	ch := make(chan error, 1)

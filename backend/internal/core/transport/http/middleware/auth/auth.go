@@ -13,7 +13,7 @@ func (m *Manager) AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 
 		ctx := r.Context()
-		
+
 		logger := core_logger.FromContext(ctx)
 
 		responseHandler := core_http_response.NewHTTPResponseHandler(logger, rw)
@@ -22,7 +22,7 @@ func (m *Manager) AuthMiddleware(next http.Handler) http.Handler {
 
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
-		userId, err := m.tokenManager.Parse(tokenString)
+		userId, err := m.Parse(tokenString)
 
 		if err != nil {
 			responseHandler.ErrorResponse(

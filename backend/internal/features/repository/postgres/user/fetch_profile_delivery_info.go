@@ -2,8 +2,10 @@ package users_repository_postgres
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 )
 
@@ -32,6 +34,9 @@ func (r *UsersRepository) FetchProfileDeliveryInfo(
 	)
 
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return model.UserDeliveryInfoOut{}, nil
+		}
 		return model.UserDeliveryInfoOut{}, fmt.Errorf("scan query err: %w", err)
 	}
 

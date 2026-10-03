@@ -2,8 +2,10 @@ package users_repository_postgres
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/nickznew1/MagazineMZM/backend/internal/domain/model"
 )
 
@@ -30,6 +32,9 @@ func (r *UsersRepository) FetchProfilePersonalInfo(
 		&profilePersonalInfo.SecondName,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return model.UserPersonalInfoOut{}, nil
+		}
 		return model.UserPersonalInfoOut{}, fmt.Errorf("scan query error: %w", err)
 	}
 

@@ -62,7 +62,8 @@ magazine-app-backend:
 	@export LOGGER_FOLDER=${PROJECT_ROOT}/backend/out/logs && \
 	export POSTGRES_HOST=localhost && \
 	cd backend && go mod tidy && \
-	go run cmd/main.go
+	cd cmd && \
+	go run magazine-app/main.go
 
 magazine-app-frontend:
 	@cd frontend && npm run build && serve -s build

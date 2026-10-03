@@ -12,7 +12,7 @@ func SetupLogger(config Config) *slog.Logger {
 	var logger *slog.Logger
 
 	switch config.Level {
-	case "local":
+	case "DEBUG":
 		logger = slog.New(tint.NewTextHandler(os.Stdout, &tint.Options{Level: slog.LevelDebug}))
 	case "dev":
 		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
