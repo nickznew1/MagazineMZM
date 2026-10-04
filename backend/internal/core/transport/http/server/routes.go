@@ -1,11 +1,11 @@
 package core_transport_http_server
 
 import (
-	"log/slog"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	core_logger "github.com/nickznew1/MagazineMZM/backend/internal/core/logger"
 	core_postgres_pool "github.com/nickznew1/MagazineMZM/backend/internal/core/repository/postgres/pool"
 	core_middleware_auth "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/middleware/auth"
 	core_middleware "github.com/nickznew1/MagazineMZM/backend/internal/core/transport/http/middleware/logger"
@@ -26,7 +26,7 @@ import (
 func Routes(
 	pool *core_postgres_pool.ConnectionPool,
 	router chi.Router,
-	log *slog.Logger) chi.Router {
+	log *core_logger.Logger) chi.Router {
 
 	router.Use(middleware.RequestID)
 	router.Use(core_middleware.LoggerMiddleware(log))

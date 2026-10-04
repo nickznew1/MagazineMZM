@@ -26,9 +26,13 @@ func main() {
 
 	defer cancel()
 
-	logger := core_logger.SetupLogger(
+	logger, err := core_logger.SetupLogger(
 		core_logger.NewConfigMust(),
 	)
+	if err != nil {
+		panic(err)
+	}
+	defer logger.Close()
 
 	pool, err := core_postgres_pool.NewConnectionPool(
 		core_postgres_pool.NewConfigMust(),
@@ -43,6 +47,7 @@ func main() {
 	logger.Info("Starting backend MZM app")
 
 	logger.Debug("Debug messages are enabled")
+
 	router := core_transport_http_server.NewRouter(pool, logger)
 
 	httpServer := core_transport_http_server.NewHTTPServer(

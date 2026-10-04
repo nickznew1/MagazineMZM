@@ -4,21 +4,21 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log/slog"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	core_logger "github.com/nickznew1/MagazineMZM/backend/internal/core/logger"
 )
 
 type HTTPServer struct {
 	config Config
-	log    *slog.Logger
+	log    *core_logger.Logger
 	router chi.Router
 }
 
 func NewHTTPServer(
 	config Config,
-	log *slog.Logger,
+	log *core_logger.Logger,
 ) *HTTPServer {
 
 	return &HTTPServer{

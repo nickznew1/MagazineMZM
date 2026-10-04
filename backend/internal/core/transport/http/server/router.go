@@ -1,14 +1,13 @@
 package core_transport_http_server
 
 import (
-	"log/slog"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
+	core_logger "github.com/nickznew1/MagazineMZM/backend/internal/core/logger"
 	core_postgres_pool "github.com/nickznew1/MagazineMZM/backend/internal/core/repository/postgres/pool"
 )
 
-func NewRouter(pool *core_postgres_pool.ConnectionPool, log *slog.Logger) chi.Router {
+func NewRouter(pool *core_postgres_pool.ConnectionPool, log *core_logger.Logger) chi.Router {
 	router := chi.NewRouter()
 
 	router.Use(cors.Handler(cors.Options{
