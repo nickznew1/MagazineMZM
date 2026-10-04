@@ -3,10 +3,10 @@ package core_middleware_auth
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"log/slog"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	core_logger "github.com/nickznew1/MagazineMZM/backend/internal/core/logger"
 )
 
 const (
@@ -21,10 +21,10 @@ type TokenManager interface {
 
 type Manager struct {
 	signingKey string
-	log        *slog.Logger
+	log        *core_logger.Logger
 }
 
-func NewManager(log *slog.Logger) *Manager {
+func NewManager(log *core_logger.Logger) *Manager {
 	return &Manager{
 		signingKey: signingKey,
 		log:        log,

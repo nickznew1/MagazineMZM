@@ -7,9 +7,10 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5/middleware"
+	core_logger "github.com/nickznew1/MagazineMZM/backend/internal/core/logger"
 )
 
-func LoggerMiddleware(log *slog.Logger) func(next http.Handler) http.Handler {
+func LoggerMiddleware(log *core_logger.Logger) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		log = log.With(
 			slog.String("component", "middleware/logger"),

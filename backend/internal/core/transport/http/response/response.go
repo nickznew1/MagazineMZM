@@ -7,15 +7,16 @@ import (
 	"net/http"
 
 	core_errors "github.com/nickznew1/MagazineMZM/backend/internal/core/errors"
+	core_logger "github.com/nickznew1/MagazineMZM/backend/internal/core/logger"
 )
 
 type HTTPResponseHandler struct {
-	log *slog.Logger
+	log *core_logger.Logger
 
 	rw http.ResponseWriter
 }
 
-func NewHTTPResponseHandler(log *slog.Logger, rw http.ResponseWriter) *HTTPResponseHandler {
+func NewHTTPResponseHandler(log *core_logger.Logger, rw http.ResponseWriter) *HTTPResponseHandler {
 	return &HTTPResponseHandler{
 		log: log,
 		rw:  rw,
@@ -27,7 +28,7 @@ func (h *HTTPResponseHandler) ErrorResponse(err error, msg string) {
 		statusCode int
 		loggerFunc func(string, ...any)
 	)
-	
+
 	switch {
 	case errors.Is(err, core_errors.ErrInvalidArgument):
 		statusCode = http.StatusBadRequest
