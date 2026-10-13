@@ -10,6 +10,8 @@ type ItemHTTPHandler struct {
 	itemService ItemService
 }
 
+//go:generate mockgen -source=$GOFILE -destination=mocks/mock_service.go
+
 type ItemService interface {
 	CreateItem(
 		ctx context.Context,
